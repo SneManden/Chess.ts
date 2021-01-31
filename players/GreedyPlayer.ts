@@ -34,13 +34,13 @@ export class GreedyPlayer extends Player {
     if (attackingPieces.length === 0) {
       return null;
     }
-    
-    const best = attackingPieces.sort((a,b) =>
+
+    const bestAttackPiece = attackingPieces.sort((a,b) =>
       this.importance(this.board?.lookAt(a.attackMoves[0]) ?? null)
       -
       this.importance(this.board?.lookAt(b.attackMoves[0]) ?? null)
     )[0];
-    return { piece: best.piece, to: best.attackMoves[0] };
+    return { piece: bestAttackPiece.piece, to: bestAttackPiece.attackMoves[0] };
   }
 
   private attackingMoves(piece: ChessPiece): Position[] {
