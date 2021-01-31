@@ -64,18 +64,18 @@ export class Game {
   }
 
   startGame(): void {
-    const iterations = 1;
+    const totalRounds = 10;
 
     if (!this.playerWhite || !this.playerBlack) {
       throw new Error("Game needs players!");
     }
     
-    for (let iteration = iterations; iteration > 0; iteration--) {
+    for (let round = 1; round <= totalRounds; round++) {
       const activePlayer = this.nextTurn;
       if (!activePlayer) {
         break;
       }
-      console.group("\nRound", iteration, ":", activePlayer.name, "(", Color[activePlayer.color], ")");
+      console.group("\nRound", round, ":", activePlayer.name, "(", Color[activePlayer.color], ")");
 
       const other = activePlayer === this.playerWhite ? this.playerBlack : this.playerWhite;
 
@@ -100,7 +100,6 @@ export class Game {
     console.groupEnd();
 
     console.log("Game ended");
-    console.log(this.board.drawBoardString());
   }
 
   private createPieces<C extends Color>(color: C, homeRank: HomeRank<C>, pawnRank: PawnRank<C>): ChessPiece[] {

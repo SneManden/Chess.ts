@@ -1,8 +1,8 @@
 import { assertEquals } from "https://deno.land/std@0.85.0/testing/asserts.ts";
 import { Board } from "../Board.ts";
-import { Color, HomeRank, PawnRank } from "../Game.ts";
+import { Color } from "../Game.ts";
 import { Pawn } from "../pieces/Pawn.ts";
-import { Col, Position, Row } from "../Position.ts";
+import { Position } from "../Position.ts";
 import { Rook } from "../pieces/Rook.ts";
 
 // When TS 4.2 is available, use: expected: `${Col}${Row}`[]

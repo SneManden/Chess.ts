@@ -13,7 +13,7 @@ export abstract class ChessPiece {
     public readonly color: Color,
     private initialPosition: Position | null
   ) {
-    this.name = this.createName(initialPosition);
+    this.name = this.createName();
     if (initialPosition) {
       this.board.replace(this, initialPosition);
     }
@@ -77,8 +77,7 @@ export abstract class ChessPiece {
     return notNullish(other) && other.color !== Color.Undefined && other.color === this.color;
   }
 
-  private createName(initialPosition: Position | null): string {
-    const colInfo = isNullish(initialPosition) || this.piece === Piece.King || this.piece === Piece.Queen;
-    return `${Color[this.color]} ${Piece[this.piece]} ${colInfo}`.trim();
+  private createName(): string {
+    return `${Color[this.color]} ${Piece[this.piece]}`.trim();
   } 
 }
