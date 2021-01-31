@@ -1,61 +1,29 @@
-import { ChessPiece } from "./ChessPiece";
-import { BoardDict, Color, Square, HomeRank, PawnRank } from "./Game";
-import { Row, Col, Position, RestrictedPosition } from "./Position";
-import { Rook } from "./pieces/Rook";
-import { Pawn } from "./pieces/Pawn";
+import { ChessPiece } from "./ChessPiece.ts";
+import { BoardDict, Color, Square, HomeRank, PawnRank } from "./Game.ts";
+import { Row, Col, Position } from "./Position.ts";
+import { Rook } from "./pieces/Rook.ts";
+import { Pawn } from "./pieces/Pawn.ts";
+import { Knight } from "./pieces/Knight.ts";
+import { Bishop } from "./pieces/Bishop.ts";
+import { Queen } from "./pieces/Queen.ts";
+import { King } from "./pieces/King.ts";
 
 export class Board {
   private rows: Row[] = [1, 2, 3, 4, 5, 6, 7, 8];
   private cols: Col[] = ["A", "B", "C", "D", "E", "F", "G", "H"];
   private board: BoardDict = this.createEmptyBoard();
 
-  private pieces: { [pieceId: string]: Position | null };
+  private pieces: { [pieceId: string]: Position | null } = {};
 
   private white: ChessPiece[] = [];
   private black: ChessPiece[] = [];
 
   constructor() {
-    const whiteTeam = <W extends Color.White>(white: W) => {
-      const pawns = Position.cols.map(col => new Pawn<W>(this, white, new RestrictedPosition(2, col)));
-      return [
-        new Rook(this, white, new RestrictedPosition(2, "A")),
-        ...pawns
-      ];
-    };
-    this.white = whiteTeam(Color.White);
+  }
 
-    const blackTeam = <B extends Color.Black>(color: B) => {
-      const pawns = Position.cols.map(col => new Pawn<B>(this, color, new RestrictedPosition(7, col)));
-      return [
-        ...pawns
-      ];
-    };
-    this.black = blackTeam(Color.Black);
-
-    // interface Config<C extends Color> {
-    //   color: C,
-    //   homeRank: HomeRank<C>,
-    //   pawnRank: PawnRank<C>
-    // }
-    // const colors = [Color.White, Color.Black];
-    // const config = colors.map(c => ({
-    //   color: c,
-    //   homeRank: Position.homeRank(c),
-    //   pawnRank: Position.pawnRank(c),
-    // }));
-    // for (const { homeRank, pawnRank, color } of config) {
-    //   const team = [
-    //     new Rook(this, color, new RestrictedPosition(homeRank, "A")),
-    //     new Rook(this, color, new RestrictedPosition(homeRank, "H")),
-    //     // ...,
-    //     ...[Position.cols.map(col => new Pawn(this, color, new RestrictedPosition(pawnRank, col)))]
-    //   ];
-    //   if (color === Color.White) {
-    //     this.white = team;
-    //   } else {
-    //     this.black = team;
-    //   }
-    // }
+  setupNewGame(): void {
+    this.white = this.createPieces(Color.White, 1, 2);
+    this.black = this.createPieces(Color.Black, 8, 7);
   }
 
   replace(piece: ChessPiece, pos: Position): Square {
@@ -99,6 +67,23 @@ export class Board {
     return true;
   }
 
+  private createPieces<C extends Color>(color: C, homeRank: HomeRank<C>, pawnRank: PawnRank<C>): ChessPiece[] {
+    const pawns = Position.cols.map(col => new Pawn<C>(this, color, new Position(pawnRank, col)));
+    return [
+      // Home Rank: left to right
+      new Rook<C>(this, color, new Position(homeRank, "A")),
+      new Knight<C>(this, color, new Position(homeRank, "B")),
+      new Bishop<C>(this, color, new Position(homeRank, "C")),
+      new Queen<C>(this, color, new Position(homeRank, "D")),
+      new King<C>(this, color, new Position(homeRank, "E")),
+      new Bishop<C>(this, color, new Position(homeRank, "F")),
+      new Knight<C>(this, color, new Position(homeRank, "G")),
+      new Rook<C>(this, color, new Position(homeRank, "H")),
+      // Pawn Rank:
+      ...pawns
+    ];
+  }
+
   private updatePosition(piece: ChessPiece, pos: Position | null): void {
     if (pos) {
       this.board[pos.row][pos.col] = piece;
@@ -107,12 +92,16 @@ export class Board {
   }
 
   private createEmptyBoard(): BoardDict {
-    return this.rows.reduce((p, r) => {
-      p[r] = this.cols.reduce((x, c) => {
-        x[c] = "empty";
-        return x;
+    const rowNumbers = this.rows.map(r => r as number);
+    const colStrings = this.cols.map(c => c as string);
+
+    const dict = rowNumbers.reduce<{ [key: number]: { [key: string]: Square }}>((rows, row) => {
+      rows[row] = colStrings.reduce<{ [key: string]: Square }>((cols, col) => {
+        cols[col] = null;
+        return cols;
       }, {});
-      return p;
-    }, {}) as BoardDict;
+      return rows;
+    }, {})
+    return dict as BoardDict;
   }
 }

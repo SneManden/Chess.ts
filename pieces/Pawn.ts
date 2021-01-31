@@ -1,10 +1,11 @@
-import { Board } from "../Board";
-import { ChessPiece } from "../ChessPiece";
-import { Color, PawnRank, Piece } from "../Game";
-import { Col, Position, RestrictedPosition } from "../Position";
+import { Board } from "../Board.ts";
+import { ChessPiece } from "../ChessPiece.ts";
+import { Color, PawnRank, Piece } from "../Game.ts";
+import { Col, Position } from "../Position.ts";
+import { notNullish } from "../utility.ts";
 
-export class Pawn<T extends Color> extends ChessPiece {
-  constructor(board: Board, color: T, pos: RestrictedPosition<PawnRank<T>, Col>){
+export class Pawn<C extends Color> extends ChessPiece {
+  constructor(board: Board, color: C, pos: Position<PawnRank<C>, Col>){
     super(board, Piece.Pawn, color, `Pawn ${pos.col}`, pos);
   }
 
@@ -18,6 +19,6 @@ export class Pawn<T extends Color> extends ChessPiece {
       pos.forward(this.color)?.left(),
       pos.forward(this.color)?.right(),
       this.pristine ? pos.forward(this.color)?.forward(this.color) : null,
-    ].filter(pos => pos !== null).filter(pos => this.board.isValidMove(pos, this.color));
+    ].filter(notNullish).filter(pos => this.board.isValidMove(pos, this.color));
   }
 }

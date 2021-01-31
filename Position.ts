@@ -1,10 +1,10 @@
-import { Color, PawnRank } from "./Game";
+import { Color, PawnRank } from "./Game.ts";
 
 export type Col = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
 export type Row = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
-export class Position {
-  constructor(readonly row: Row, readonly col: Col){}
+export class Position<R extends Row = Row, C extends Col = Col> {
+  constructor(readonly row: R, readonly col: C){}
 
   left(): Position | null {
     const col = this.colToLeft();
@@ -59,18 +59,5 @@ export class Position {
   }
   static isRow(value: number): value is Row {
     return Position.rows.map(r => r as number).includes(value);
-  }
-  // static homeRank(color: Color): Extract<Row, 1 | 8> {
-  //   return color === Color.White ? 1 : 8;
-  // }
-  // static pawnRank(color: C): PawnRank<C> {
-  //   return color === Color.Black ? 7 : 2;
-  // }
-}
-
-
-export class RestrictedPosition<R extends Row, C extends Col> extends Position {
-  constructor(row: R, col: C) {
-    super(row, col);
   }
 }

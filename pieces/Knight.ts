@@ -1,11 +1,12 @@
-import { Board } from "../Board";
-import { ChessPiece } from "../ChessPiece";
-import { Color, Piece } from "../Game";
-import { Position } from "../Position";
+import { Board } from "../Board.ts";
+import { ChessPiece } from "../ChessPiece.ts";
+import { Color, HomeRank, Piece } from "../Game.ts";
+import { Position } from "../Position.ts";
+import { notNullish } from "../utility.ts";
 
-export class Knight extends ChessPiece {
-  constructor(board: Board, color: Color, pos: Position) {
-    super(board, Piece.Pawn, color, `Knight ${pos.col}`, pos);
+export class Knight<C extends Color> extends ChessPiece {
+  constructor(board: Board, color: C, pos: Position<HomeRank<C>, "B" | "G">) {
+    super(board, Piece.Knight, color, `Knight ${pos.col}`, pos);
   }
 
   moves(): Position[] {
@@ -14,17 +15,17 @@ export class Knight extends ChessPiece {
       return [];
     }
     return [
-      pos.left()?.left()?.up() ?? null,
-      pos.left()?.left()?.down() ?? null,
+      pos.left()?.left()?.up(),
+      pos.left()?.left()?.down(),
 
-      pos.right()?.right()?.up() ?? null,
-      pos.right()?.right()?.up() ?? null,
+      pos.right()?.right()?.up(),
+      pos.right()?.right()?.up(),
 
-      pos.up()?.up()?.left() ?? null,
-      pos.up()?.up()?.right() ?? null,
+      pos.up()?.up()?.left(),
+      pos.up()?.up()?.right(),
 
-      pos.down()?.down()?.left() ?? null,
-      pos.down()?.down()?.right() ?? null,
-    ].filter(pos => pos !== null).filter(pos => this.board.isValidMove(pos, this.color));
+      pos.down()?.down()?.left(),
+      pos.down()?.down()?.right(),
+    ].filter(notNullish).filter(pos => this.board.isValidMove(pos, this.color));
   }
 }

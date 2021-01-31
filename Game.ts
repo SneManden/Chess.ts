@@ -1,5 +1,5 @@
-import { ChessPiece } from "./ChessPiece";
-import { Col, Row } from "./Position";
+import { ChessPiece } from "./ChessPiece.ts";
+import { Col, Row } from "./Position.ts";
 
 export enum Piece {
   Pawn,   // Bonde
@@ -12,8 +12,8 @@ export enum Piece {
 
 export enum Color { White, Black }
 
-export type HomeRank<Color> = Color extends Color.White ? 1 : 8;
-export type PawnRank<Color> = Color extends Color.White ? 2 : 7;
+export type HomeRank<C extends Color> = C extends Color.White ? 1 : 8;
+export type PawnRank<C extends Color> = C extends Color.White ? 2 : 7;
 
 export type Empty = null;
 export type Square = ChessPiece | Empty;

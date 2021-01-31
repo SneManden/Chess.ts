@@ -2,5 +2,12 @@
     "editor.tabSize": 2,
     "javascript.preferences.quoteStyle": "double",
     "typescript.preferences.quoteStyle": "double",
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+
+    "deno.enable": true,
+    "deno.unstable": true,
+    "deno.lint": true,
+    "[typescript]": {
+      "editor.defaultFormatter": "denoland.vscode-deno",
+    },
 }

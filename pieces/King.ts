@@ -1,11 +1,12 @@
-import { Board } from "../Board";
-import { ChessPiece } from "../ChessPiece";
-import { Color, Piece } from "../Game";
-import { Position } from "../Position";
+import { Board } from "../Board.ts";
+import { ChessPiece } from "../ChessPiece.ts";
+import { Color, HomeRank, Piece } from "../Game.ts";
+import { Position } from "../Position.ts";
+import { notNullish } from "../utility.ts";
 
-export class King extends ChessPiece {
-  constructor(board: Board, color: Color, pos: Position) {
-    super(board, Piece.Pawn, color, "King", pos);
+export class King<C extends Color> extends ChessPiece {
+  constructor(board: Board, color: C, pos: Position<HomeRank<C>, "E">) {
+    super(board, Piece.King, color, "King", pos);
   }
 
   moves(): Position[] {
@@ -24,7 +25,7 @@ export class King extends ChessPiece {
       pos.rightUp(),
       pos.rightDown(),
     ]
-      .filter(pos => pos !== null)
+      .filter(notNullish)
       .filter(pos => !this.board.underAttack(pos, this.color))
       .filter(pos => this.board.isValidMove(pos, this.color));
   }

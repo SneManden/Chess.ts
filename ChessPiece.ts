@@ -1,6 +1,6 @@
-import { Board } from "./Board";
-import { Color, Piece, Square } from "./Game";
-import { Position } from "./Position";
+import { Board } from "./Board.ts";
+import { Color, Piece, Square } from "./Game.ts";
+import { Position } from "./Position.ts";
 
 export abstract class ChessPiece {
 
@@ -21,7 +21,8 @@ export abstract class ChessPiece {
   }
 
   protected get pristine() {
-    return this.position() && this.initialPosition.equals(this.position());
+    const position = this.position();
+    return position && this.initialPosition.equals(position);
   }
 
   move(to: Position): Square {
@@ -52,7 +53,7 @@ export abstract class ChessPiece {
         break; // include next, but don't go further
       }
       next = direction(next);
-    };
+    }
     return ups;
   }
 }
