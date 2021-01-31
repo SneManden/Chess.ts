@@ -73,11 +73,12 @@ export abstract class ChessPiece {
   protected isOpponent(other: Square): boolean {
     return notNullish(other) && other.color !== Color.Undefined && other.color !== this.color;
   }
+
   protected isTeammate(other: Square): boolean {
     return notNullish(other) && other.color !== Color.Undefined && other.color === this.color;
   }
 
   private createName(): string {
     return `${Color[this.color]} ${Piece[this.piece]}`.trim();
-  } 
+  }
 }

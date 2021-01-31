@@ -7,7 +7,7 @@ import { Queen } from "./pieces/Queen.ts";
 import { Pawn } from "./pieces/Pawn.ts";
 import { Rook } from "./pieces/Rook.ts";
 import { Col, Position, Row } from "./Position.ts";
-import { Player } from "./Player.ts";
+import { Player } from "./players/Player.ts";
 
 export enum Piece {
   Pawn,   // Bonde
@@ -63,9 +63,7 @@ export class Game {
     this.board.initialize(white, black);
   }
 
-  startGame(): void {
-    const totalRounds = 10;
-
+  startGame(totalRounds = 100): void {
     if (!this.playerWhite || !this.playerBlack) {
       throw new Error("Game needs players!");
     }
@@ -121,8 +119,3 @@ export class Game {
     ];
   }
 }
-
-// TODO:
-// 1. Castling
-// 2. En pessant (pawn reaches back rang => exchange with queen, rook, bishop, or knight)
-// 3. Move validity (own king must not be check by move)

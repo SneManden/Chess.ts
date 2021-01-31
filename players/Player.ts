@@ -1,9 +1,8 @@
 import { Board } from "../Board.ts";
 import { ChessPiece } from "../ChessPiece.ts";
-import { Color } from "../Game.ts";
+import { Color, Square } from "../Game.ts";
 import { Position } from "../Position.ts";
-import { uuidv4 } from "../utility.ts";
-
+import { notNullish, uuidv4 } from "../utility.ts";
 
 export interface Move {
   piece: ChessPiece,
@@ -28,4 +27,12 @@ export abstract class Player {
   }
 
   abstract makeMove(): Move | "give up";
+
+  protected isOpponent(other: Square): boolean {
+    return notNullish(other) && other.color !== Color.Undefined && other.color !== this.color;
+  }
+  
+  protected isTeammate(other: Square): boolean {
+    return notNullish(other) && other.color !== Color.Undefined && other.color === this.color;
+  }
 }
