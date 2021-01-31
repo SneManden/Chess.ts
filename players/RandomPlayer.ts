@@ -1,5 +1,6 @@
-import { ChessPiece } from "./ChessPiece.ts";
-import { Position } from "./Position.ts";
+
+import { ChessPiece } from "../ChessPiece.ts";
+import { Position } from "../Position.ts";
 import { Move, Player } from "./Player.ts";
 
 export class RandomPlayer extends Player {

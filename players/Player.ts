@@ -1,8 +1,9 @@
-import { Board } from "./Board.ts";
-import { ChessPiece } from "./ChessPiece.ts";
-import { Color } from "./Game.ts";
-import { Col, Position, Row } from "./Position.ts";
-import { uuidv4 } from "./utility.ts";
+import { Board } from "../Board.ts";
+import { ChessPiece } from "../ChessPiece.ts";
+import { Color } from "../Game.ts";
+import { Position } from "../Position.ts";
+import { uuidv4 } from "../utility.ts";
+
 
 export interface Move {
   piece: ChessPiece,
