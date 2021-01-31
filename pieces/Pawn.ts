@@ -2,11 +2,11 @@ import { Board } from "../Board.ts";
 import { ChessPiece } from "../ChessPiece.ts";
 import { Color, PawnRank, Piece } from "../Game.ts";
 import { Col, Position } from "../Position.ts";
-import { notNullish } from "../utility.ts";
+import { isNullish, notNullish } from "../utility.ts";
 
 export class Pawn<C extends Color> extends ChessPiece {
-  constructor(board: Board, color: C, pos: Position<PawnRank<C>, Col>){
-    super(board, Piece.Pawn, color, `Pawn ${pos.col}`, pos);
+  constructor(board: Board, color: C, pos: Position<PawnRank<C>, Col> | null){
+    super(board, Piece.Pawn, color, pos);
   }
 
   moves(): Position[] {
@@ -14,11 +14,21 @@ export class Pawn<C extends Color> extends ChessPiece {
     if (!pos) {
       return [];
     }
-    return [
-      pos.forward(this.color),
+
+    // Pawn can move 2 squares forward in the first move, only to an empty square
+    const basicMoves = [
+      ...this.range((pos: Position) => pos.forward(this.color), this.pristine ? 2 : 1),
+    ].filter(notNullish).filter(pos => !this.board.lookAt(pos));
+    
+    // Pawn only attacks in the immediate forward diagonals
+    const attackMoves = [
       pos.forward(this.color)?.left(),
       pos.forward(this.color)?.right(),
-      this.pristine ? pos.forward(this.color)?.forward(this.color) : null,
-    ].filter(notNullish).filter(pos => this.board.isValidMove(pos, this.color));
+    ].filter(notNullish).filter(pos => this.isOpponent(this.board.lookAt(pos)));
+    
+    return [
+      ...basicMoves,
+      ...attackMoves,
+    ].filter(pos => this.board.isValidMove(pos, this.color));
   }
 }

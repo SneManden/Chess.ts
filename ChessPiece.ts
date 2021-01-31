@@ -1,17 +1,22 @@
 import { Board } from "./Board.ts";
 import { Color, Piece, Square } from "./Game.ts";
 import { Position } from "./Position.ts";
+import { isNullish, notNullish, uuidv4 } from "./utility.ts";
 
 export abstract class ChessPiece {
+  readonly id = uuidv4();
+  readonly name!: string;
+
   constructor(
     protected readonly board: Board,
     public readonly piece: Piece,
     public readonly color: Color,
-    public readonly id: string,
-    private initialPosition: Position
+    private initialPosition: Position | null
   ) {
-    // console.log("[", id, "] Adding", Color[color], Piece[piece], "at", initialPosition);
-    this.board.replace(this, initialPosition);
+    this.name = this.createName(initialPosition);
+    if (initialPosition) {
+      this.board.replace(this, initialPosition);
+    }
   }
 
   abstract moves(): Position[];
@@ -20,9 +25,9 @@ export abstract class ChessPiece {
     return this.position() !== null;
   }
 
-  protected get pristine() {
+  protected get pristine(): boolean {
     const position = this.position();
-    return position && this.initialPosition.equals(position);
+    return notNullish(position) && this.initialPosition?.equals(position) === true;
   }
 
   move(to: Position): Square {
@@ -48,20 +53,32 @@ export abstract class ChessPiece {
     return this.board.getPosition(this);
   }
 
-  protected range(direction: (pos: Position) => Position | null): Position[] {
+  protected range(direction: (pos: Position) => Position | null, distance = 8): Position[] {
     const pos = this.position();
     if (!pos) {
       return [];
     }
-    const ups: Position[] = [];
+    const positions: Position[] = [];
     let next = direction(pos);
-    while (next) {
-      ups.push(next);
+    while (next && positions.length < distance) {
+      positions.push(next);
       if (this.board.lookAt(next)) {
         break; // include next, but don't go further
       }
       next = direction(next);
     }
-    return ups;
+    return positions;
   }
+
+  protected isOpponent(other: Square): boolean {
+    return notNullish(other) && other.color !== Color.Undefined && other.color !== this.color;
+  }
+  protected isTeammate(other: Square): boolean {
+    return notNullish(other) && other.color !== Color.Undefined && other.color === this.color;
+  }
+
+  private createName(initialPosition: Position | null): string {
+    const colInfo = isNullish(initialPosition) || this.piece === Piece.King || this.piece === Piece.Queen;
+    return `${Color[this.color]} ${Piece[this.piece]} ${colInfo}`.trim();
+  } 
 }

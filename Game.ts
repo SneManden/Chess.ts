@@ -18,7 +18,7 @@ export enum Piece {
   King,   // Konge
 }
 
-export enum Color { White, Black, Undefined }
+export enum Color { Undefined = 0, White, Black }
 
 export type HomeRank<C extends Color> = C extends Color.White ? 1 : 8;
 export type PawnRank<C extends Color> = C extends Color.White ? 2 : 7;
@@ -75,21 +75,21 @@ export class Game {
       if (!activePlayer) {
         break;
       }
-      console.group("\nRound", iteration, ":", activePlayer.id, "(", Color[activePlayer.color], ")");
+      console.group("\nRound", iteration, ":", activePlayer.name, "(", Color[activePlayer.color], ")");
 
       const other = activePlayer === this.playerWhite ? this.playerBlack : this.playerWhite;
 
       const move = activePlayer.makeMove();
       if (move === "give up") {
-        console.log(activePlayer.id, "has given up.", other.id, "wins");
+        console.log(activePlayer.name, "has given up.", other.name, "wins");
         break;
       } else {
-        console.log(activePlayer.id, "moves", move.piece.id, "to", move.to.toString());
+        console.log(activePlayer.name, "moves", move.piece.name, "to", move.to.toString());
       }
 
       const replacement = this.board.replace(move.piece, move.to);
       if (replacement) {
-        console.log("takes", replacement.id);
+        console.log("takes", replacement.name);
       }
 
       console.log(this.board.drawBoardString());

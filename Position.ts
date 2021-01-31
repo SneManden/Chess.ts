@@ -52,7 +52,7 @@ export class Position<R extends Row = Row, C extends Col = Col> {
     return Position.cols[Position.cols.indexOf(this.col) - 1] ?? null;
   }
   private colToRight(): Col | null {
-    return Position.cols[Position.cols.indexOf(this.col) - 1] ?? null;
+    return Position.cols[Position.cols.indexOf(this.col) + 1] ?? null;
   }
 
   static get rows(): Row[] {

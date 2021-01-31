@@ -88,9 +88,16 @@ export class Board {
   }
 
   private updatePosition(piece: ChessPiece, pos: Position | null): void {
+    // Remove from current position
+    const currentPos = this.getPosition(piece);
+    if (currentPos) {
+      this.board[currentPos.row][currentPos.col] = null;
+    }
+    // Place at position
     if (pos) {
       this.board[pos.row][pos.col] = piece;
     }
+    // Update position lookup for piece
     this.pieces[piece.id] = pos;
   }
 

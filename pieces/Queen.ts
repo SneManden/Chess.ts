@@ -5,8 +5,8 @@ import { Position } from "../Position.ts";
 import { notNullish } from "../utility.ts";
 
 export class Queen<C extends Color> extends ChessPiece {
-  constructor(board: Board, color: C, pos: Position<HomeRank<C>, "D">) {
-    super(board, Piece.Queen, color, "Queen", pos);
+  constructor(board: Board, color: C, pos: Position<HomeRank<C>, "D"> | null) {
+    super(board, Piece.Queen, color, pos);
   }
 
   moves(): Position[] {
