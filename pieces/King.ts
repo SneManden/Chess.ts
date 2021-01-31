@@ -26,7 +26,7 @@ export class King<C extends Color> extends ChessPiece {
       pos.rightDown(),
     ]
       .filter(notNullish)
-      .filter(pos => !this.board.underAttack(pos, this.color))
+      // .filter(pos => !this.board.underAttack(pos, this.color))
       .filter(pos => this.board.isValidMove(pos, this.color));
   }
 }

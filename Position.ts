@@ -44,6 +44,10 @@ export class Position<R extends Row = Row, C extends Col = Col> {
     return this.row === other.row && this.col === other.col;
   }
 
+  toString(): string {
+    return `${this.col}${this.row}`;
+  }
+
   private colToLeft(): Col | null {
     return Position.cols[Position.cols.indexOf(this.col) - 1] ?? null;
   }

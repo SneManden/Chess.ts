@@ -1,12 +1,6 @@
 import { ChessPiece } from "./ChessPiece.ts";
-import { BoardDict, Color, Square, HomeRank, PawnRank } from "./Game.ts";
+import { BoardDict, Color, Square } from "./Game.ts";
 import { Row, Col, Position } from "./Position.ts";
-import { Rook } from "./pieces/Rook.ts";
-import { Pawn } from "./pieces/Pawn.ts";
-import { Knight } from "./pieces/Knight.ts";
-import { Bishop } from "./pieces/Bishop.ts";
-import { Queen } from "./pieces/Queen.ts";
-import { King } from "./pieces/King.ts";
 
 export class Board {
   private rows: Row[] = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -21,9 +15,9 @@ export class Board {
   constructor() {
   }
 
-  setupNewGame(): void {
-    this.white = this.createPieces(Color.White, 1, 2);
-    this.black = this.createPieces(Color.Black, 8, 7);
+  initialize(white: ChessPiece[], black:ChessPiece[]): void {
+    this.white = white;
+    this.black = black;
   }
 
   replace(piece: ChessPiece, pos: Position): Square {
@@ -67,21 +61,30 @@ export class Board {
     return true;
   }
 
-  private createPieces<C extends Color>(color: C, homeRank: HomeRank<C>, pawnRank: PawnRank<C>): ChessPiece[] {
-    const pawns = Position.cols.map(col => new Pawn<C>(this, color, new Position(pawnRank, col)));
-    return [
-      // Home Rank: left to right
-      new Rook<C>(this, color, new Position(homeRank, "A")),
-      new Knight<C>(this, color, new Position(homeRank, "B")),
-      new Bishop<C>(this, color, new Position(homeRank, "C")),
-      new Queen<C>(this, color, new Position(homeRank, "D")),
-      new King<C>(this, color, new Position(homeRank, "E")),
-      new Bishop<C>(this, color, new Position(homeRank, "F")),
-      new Knight<C>(this, color, new Position(homeRank, "G")),
-      new Rook<C>(this, color, new Position(homeRank, "H")),
-      // Pawn Rank:
-      ...pawns
-    ];
+  drawBoardString(): string {
+    const blackSquare = "■";
+
+    const drawBlackSquare = (row: Row, col: Col) => {
+      const colIndex = (Position.cols.indexOf(col) + 1) % 2;
+      return (((row % 2) + colIndex) % 2) === 0;
+    }
+
+    let result = "";
+    for (const row of Position.rows.slice().reverse()) {
+      let rowString = "";
+      for (const col of Position.cols) {
+        const square = this.lookAt(new Position(row, col));
+        if (square) {
+          rowString += square.toString();
+        } else if (drawBlackSquare(row, col)) {
+          rowString += blackSquare;
+        } else {
+          rowString += " ";
+        }
+      }
+      result += `${rowString}\n`;
+    }
+    return result;
   }
 
   private updatePosition(piece: ChessPiece, pos: Position | null): void {

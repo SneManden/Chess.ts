@@ -3,7 +3,6 @@ import { Color, Piece, Square } from "./Game.ts";
 import { Position } from "./Position.ts";
 
 export abstract class ChessPiece {
-
   constructor(
     protected readonly board: Board,
     public readonly piece: Piece,
@@ -11,6 +10,7 @@ export abstract class ChessPiece {
     public readonly id: string,
     private initialPosition: Position
   ) {
+    // console.log("[", id, "] Adding", Color[color], Piece[piece], "at", initialPosition);
     this.board.replace(this, initialPosition);
   }
 
@@ -33,7 +33,15 @@ export abstract class ChessPiece {
   }
 
   toString(): string {
-    return `${this.color} ${this.piece}`;
+    switch (this.piece) {
+      case Piece.Pawn: return this.color === Color.White ? "♙" : "♟︎";
+      case Piece.Rook: return this.color === Color.White ? "♖" : "♜";
+      case Piece.Knight: return this.color === Color.White ? "♘" : "♞";
+      case Piece.Bishop: return this.color === Color.White ? "♗" : "♝";
+      case Piece.Queen: return this.color === Color.White ? "♕" : "♛";
+      case Piece.King: return this.color === Color.White ? "♔" : "♚";
+      default: return "";
+    }
   }
 
   protected position(): Position | null {
