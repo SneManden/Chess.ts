@@ -1,4 +1,4 @@
-import { ChessPiece } from "./ChessPiece.ts";
+import { ChessPiece } from "./pieces/ChessPiece.ts";
 import { Color, Piece, Square } from "./Game.ts";
 import { Row, Col, Position } from "./Position.ts";
 

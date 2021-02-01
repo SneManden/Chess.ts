@@ -1,5 +1,5 @@
 import { Board } from "../Board.ts";
-import { ChessPiece } from "../ChessPiece.ts";
+import { ChessPiece } from "../pieces/ChessPiece.ts";
 import { Color, Square } from "../Game.ts";
 import { Position } from "../Position.ts";
 import { notNullish, uuidv4 } from "../utility.ts";

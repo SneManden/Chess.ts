@@ -1,7 +1,7 @@
-import { Board } from "./Board.ts";
-import { Color, Piece, Square } from "./Game.ts";
-import { Position } from "./Position.ts";
-import { notNullish, uuidv4 } from "./utility.ts";
+import { Board } from "../Board.ts";
+import { Color, Piece, Square } from "../Game.ts";
+import { Position } from "../Position.ts";
+import { notNullish, uuidv4 } from "../utility.ts";
 
 export abstract class ChessPiece {
   readonly id = uuidv4();
