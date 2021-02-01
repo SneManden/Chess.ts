@@ -4,8 +4,12 @@ import { Position } from "../Position.ts";
 import { notNullish, uuidv4 } from "../utility.ts";
 
 export abstract class ChessPiece {
+  private _pristine = true;
+  
   readonly id = uuidv4();
   readonly name!: string;
+
+  get pristine(): boolean { return this._pristine; }
 
   constructor(
     protected readonly board: Board,
@@ -31,15 +35,11 @@ export abstract class ChessPiece {
     return this.position() !== null;
   }
 
-  protected get pristine(): boolean {
-    const position = this.position();
-    return notNullish(position) && this.initialPosition?.equals(position) === true;
-  }
-
   move(to: Position): Square {
     if (!this.validMoves().map(p => p.toString()).includes(to.toString())) {
       throw new Error(`Invalid position; cannot move to ${to.toString()}`);
     }
+    this._pristine = false;
     return this.board.replace(this, to);
   }
 
