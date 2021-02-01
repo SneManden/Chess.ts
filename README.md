@@ -7,14 +7,25 @@ networks and maybe train a Chess AI.
 Since I hadn't yet tried out [Deno](https://deno.land/) before, I felt
 like this was a perfect opportunity to try it out.
 
+## How to run
+Run the program by running:
+
+    deno run main.ts
+
+## Tests
+I have made a bunch of tests. Run them by
+
+    deno test
+
 ## TODO
-1. Implement move "Castling"
-2. Implement move "En pessant" (when a pawn reaches back rank => exchange with choice of queen, rook, bishop, or knight)
-3. Check Move validity (own king must not be check by move)
-4. Check(mate) stuff
-5. Show taken pieces
-6. Redo Position constructor to take arguments as (col, row) instead of (row, col)
-7. Allow for human to play
-8. Graphics
-9. Much more
-10. Play with a stop watch
+[ ] Fix pristine
+[ ] Implement move "Castling"
+[ ] Implement move "En pessant" (when a pawn reaches back rank => exchange with choice of queen, rook, bishop, or knight)
+[x] Check (basic) move validity (own king must not be check by move)
+[ ] Check(mate) stuff
+[ ] Show taken pieces
+[ ] Redo Position constructor to take arguments as (col, row) instead of (row, col)
+[ ] Allow for human to play
+[ ] Graphics
+[ ] Much more
+[ ] Play with a stop watch

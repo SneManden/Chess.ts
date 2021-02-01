@@ -10,7 +10,7 @@ Deno.test("rook alone in corner should be able to move entire row and column", (
   const board = new Board();
   const rook = new Rook(board, Color.White, new Position(1, "A"));
   assertMovesEquals(
-    rook.moves(),
+    rook.validMoves(),
     [
       ...["A2", "A3", "A4", "A5", "A6", "A7", "A8"],
       ...["B1", "C1", "D1", "E1", "F1", "G1", "H1"]
@@ -23,7 +23,7 @@ Deno.test("rook with pawn in front should only be able to move horizontally", ()
   const rook = new Rook(board, Color.White, new Position(1, "A"));
   new Pawn(board, Color.White, new Position(2, "A"));
   assertMovesEquals(
-    rook.moves(),
+    rook.validMoves(),
     ["B1", "C1", "D1", "E1", "F1", "G1", "H1"]
   );
 });
@@ -33,7 +33,7 @@ Deno.test("rook cornered by pawn and knigh should not be able to move", () => {
   const rook = new Rook(board, Color.White, new Position(1, "A"));
   new Pawn(board, Color.White, new Position(2, "A"));
   new Knight(board, Color.White, new Position(1, "B"));
-  assertMovesEquals(rook.moves(), []);
+  assertMovesEquals(rook.validMoves(), []);
 });
 
 Deno.test("rook should include opponnent in moves (attack)", () => {
@@ -43,9 +43,8 @@ Deno.test("rook should include opponnent in moves (attack)", () => {
   pawnAt(board, Color.White, new Position(6, "D")); // above
   pawnAt(board, Color.Black, new Position(4, "B")); // left
   pawnAt(board, Color.White, new Position(4, "F")); // right
-  console.log(board.drawBoardString());
   assertMovesEquals(
-    rook.moves(),
+    rook.validMoves(),
     [
       ...["D3", "D2"],  // below (opponent pos included)
       ...["D5"],        // above (teammate pos NOT included)

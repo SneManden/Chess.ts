@@ -9,7 +9,7 @@ export class Pawn<C extends Color> extends ChessPiece {
     super(board, Piece.Pawn, color, pos);
   }
 
-  moves(): Position[] {
+  protected moves(): Position[] {
     const pos = this.position();
     if (!pos) {
       return [];
@@ -29,6 +29,6 @@ export class Pawn<C extends Color> extends ChessPiece {
     return [
       ...basicMoves,
       ...attackMoves,
-    ].filter(pos => this.board.isValidMove(pos, this.color));
+    ];
   }
 }

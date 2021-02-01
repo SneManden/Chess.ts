@@ -9,7 +9,7 @@ export class Knight<C extends Color> extends ChessPiece {
     super(board, Piece.Knight, color, pos);
   }
 
-  moves(): Position[] {
+  protected moves(): Position[] {
     const pos = this.position();
     if (!pos) {
       return [];
@@ -26,6 +26,6 @@ export class Knight<C extends Color> extends ChessPiece {
 
       pos.down()?.down()?.left(),
       pos.down()?.down()?.right(),
-    ].filter(notNullish).filter(pos => this.board.isValidMove(pos, this.color));
+    ].filter(notNullish);
   }
 }

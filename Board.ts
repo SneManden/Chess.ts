@@ -1,8 +1,12 @@
 import { ChessPiece } from "./ChessPiece.ts";
-import { BoardDict, Color, Square } from "./Game.ts";
+import { Color, Piece, Square } from "./Game.ts";
 import { Row, Col, Position } from "./Position.ts";
 
+export type BoardDict = { [R in Row]: { [C in Col]: Square } };
+
 export class Board {
+  private DEBUG = false;
+
   private rows: Row[] = [1, 2, 3, 4, 5, 6, 7, 8];
   private cols: Col[] = ["A", "B", "C", "D", "E", "F", "G", "H"];
   private board: BoardDict = this.createEmptyBoard();
@@ -15,9 +19,16 @@ export class Board {
   constructor() {
   }
 
-  initialize(white: ChessPiece[], black:ChessPiece[]): void {
-    this.white = white;
-    this.black = black;
+  add(piece: ChessPiece, pos: Position): void {
+    if (this.lookAt(pos)) {
+      throw new Error(`Cannot add piece ${piece.name} at ${pos.toString()}: square is vacant!`);
+    }
+    this.updatePosition(piece, pos);
+    if (piece.color === Color.White) {
+      this.white.push(piece);
+    } else {
+      this.black.push(piece);
+    }
   }
 
   replace(piece: ChessPiece, pos: Position): Square {
@@ -39,26 +50,47 @@ export class Board {
 
   underAttack(pos: Position, self: Color): boolean {
     const opponents = self === Color.White ? this.black : this.white;
-    return opponents.some(opp => opp.moves().find(movePosition => movePosition.equals(pos)));
+    return opponents.some(opp => opp.validMoves(true).find(movePosition => movePosition.equals(pos)));
   }
 
-  isValidMove(pos: Position, self: Color): boolean {
-    const team = self === Color.White ? this.white : this.black;
-    if (this.lookAt(pos)?.color === self) {
+  isValidMove(piece: ChessPiece, to: Position): boolean {
+    if (this.lookAt(to)?.color === piece.color) {
       return false; // Cannot move to position with a teammate 
     }
 
-    // const king = team.find(piece => piece.piece === Piece.King);
-    // if (!king) {
-    //   throw new Error(`Cannot check for move validity: the board is without a ${self} king!`);
-    // }
-    // const kingPosition = this.getPosition(king);
-    // if (!kingPosition) {
-    //   throw new Error(`Cannot check for move validity: the king is not positioned on the board!`);
-    // }
-    // TODO: check that own king is not in check
+    // Try to make the move and check if:
+    //    is king in Check => invalid move; undo move
+    // otherwise, good to go
+    const prevPosition = this.getPosition(piece);
+    if (!prevPosition) {
+      throw new Error("Cannot check for invalid move for piece not on board");
+    }
+    const replaced = this.replace(piece, to);
+    if (this.isKingCheck(piece.color)) {
+      // Undo move
+      this.replace(piece, prevPosition);
+      if (replaced) {
+        this.replace(replaced, to);
+      }
+      return false;
+    }
     
     return true;
+  }
+
+  isKingCheck(color: Color): boolean {
+    const team = color === Color.White ? this.white : this.black;
+    const king = team.find(piece => piece.piece === Piece.King);
+    if (!king) {
+      this.DEBUG && console.warn(`Cannot check for move validity: the board is without a ${Color[color]} king!`);
+      return false;
+    }
+    const kingPosition = this.getPosition(king);
+    if (!kingPosition) {
+      this.DEBUG && console.warn(`Cannot check for move validity: the king is not positioned on the board!`);
+      return false;
+    }
+    return this.underAttack(kingPosition, color);
   }
 
   drawBoardString(): string {

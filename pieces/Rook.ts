@@ -9,7 +9,7 @@ export class Rook<C extends Color> extends ChessPiece {
     super(board, Piece.Pawn, color, pos);
   }
 
-  moves(): Position[] {
+  protected moves(): Position[] {
     const pos = this.position();
     if (!pos) {
       return [];
@@ -19,6 +19,6 @@ export class Rook<C extends Color> extends ChessPiece {
       ...this.range((pos: Position) => pos.down()),
       ...this.range((pos: Position) => pos.left()),
       ...this.range((pos: Position) => pos.right()),
-    ].filter(notNullish).filter(pos => this.board.isValidMove(pos, this.color));
+    ].filter(notNullish);
   }
 }

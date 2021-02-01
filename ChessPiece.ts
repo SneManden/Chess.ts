@@ -15,11 +15,17 @@ export abstract class ChessPiece {
   ) {
     this.name = this.createName();
     if (initialPosition) {
-      this.board.replace(this, initialPosition);
+      this.board.add(this, initialPosition);
     }
   }
 
-  abstract moves(): Position[];
+  protected abstract moves(): Position[];
+
+  validMoves(skipValidityCheck = false): Position[] {
+    return this.moves()
+      .filter(pos => !this.isTeammate(this.board.lookAt(pos)))
+      .filter(pos => skipValidityCheck || this.board.isValidMove(this, pos));
+  }
 
   get isOnBoard(): boolean {
     return this.position() !== null;
@@ -31,8 +37,8 @@ export abstract class ChessPiece {
   }
 
   move(to: Position): Square {
-    if (!this.moves().includes(to)) {
-      throw new Error(`Invalid position; cannot move to `);
+    if (!this.validMoves().includes(to)) {
+      throw new Error(`Invalid position; cannot move to ${to.toString()}`);
     }
     return this.board.replace(this, to);
   }

@@ -20,7 +20,7 @@ export class RandomPlayer extends Player {
   }
 
   private getRandomPiece(options: { mustHaveMoves: boolean }): ChessPiece | null {
-    const pieces = options.mustHaveMoves ? this.pieces.filter(p => p.moves().length > 0) : this.pieces;
+    const pieces = options.mustHaveMoves ? this.pieces.filter(p => p.validMoves().length > 0) : this.pieces;
 
     if (pieces.length === 0) {
       return null;
@@ -32,7 +32,7 @@ export class RandomPlayer extends Player {
   }
 
   private getRandomMove(piece: ChessPiece): Position {
-    const moves = piece.moves();
+    const moves = piece.validMoves();
     if (moves.length === 0) {
       throw new Error("Cannot get random move: Piece cannot move!");
     }

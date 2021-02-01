@@ -26,8 +26,6 @@ export type PawnRank<C extends Color> = C extends Color.White ? 2 : 7;
 export type Empty = null;
 export type Square = ChessPiece | Empty;
 
-export type BoardDict = { [R in Row]: { [C in Col]: Square } };
-
 export class Game {
   private board = new Board();
 
@@ -60,7 +58,7 @@ export class Game {
 
     this.nextTurn = p1;
 
-    this.board.initialize(white, black);
+    // this.board.initialize(white, black);
   }
 
   startGame(totalRounds = 100): void {
@@ -85,7 +83,8 @@ export class Game {
         console.log(activePlayer.name, "moves", move.piece.name, "to", move.to.toString());
       }
 
-      const replacement = this.board.replace(move.piece, move.to);
+      // const replacement = this.board.replace(move.piece, move.to);
+      const replacement = move.piece.move(move.to);
       if (replacement) {
         console.log("takes", replacement.name);
       }
