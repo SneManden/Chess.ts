@@ -105,7 +105,7 @@ export class Board {
     for (const row of Position.rows.slice().reverse()) {
       let rowString = "";
       for (const col of Position.cols) {
-        const square = this.lookAt(new Position(row, col));
+        const square = this.lookAt(new Position(col, row));
         if (square) {
           rowString += square.toString();
         } else if (drawBlackSquare(row, col)) {

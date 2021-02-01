@@ -24,7 +24,7 @@ I have made a bunch of tests. Run them by
 [x] Check (basic) move validity (own king must not be check by move)
 [ ] Check(mate) stuff
 [ ] Show taken pieces
-[ ] Redo Position constructor to take arguments as (col, row) instead of (row, col)
+[x] Redo Position constructor to take arguments as (col, row) instead of (row, col)
 [ ] Allow for human to play
 [ ] Graphics
 [ ] Much more

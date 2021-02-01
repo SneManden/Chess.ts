@@ -1,12 +1,12 @@
 import { Board } from "./Board.ts";
-import { ChessPiece } from "./ChessPiece.ts";
+import { ChessPiece } from "./pieces/ChessPiece.ts";
 import { Bishop } from "./pieces/Bishop.ts";
 import { King } from "./pieces/King.ts";
 import { Knight } from "./pieces/Knight.ts";
 import { Queen } from "./pieces/Queen.ts";
 import { Pawn } from "./pieces/Pawn.ts";
 import { Rook } from "./pieces/Rook.ts";
-import { Col, Position, Row } from "./Position.ts";
+import { Position } from "./Position.ts";
 import { Player } from "./players/Player.ts";
 
 export enum Piece {
@@ -102,17 +102,17 @@ export class Game {
   private createPieces<C extends Color>(color: C, homeRank: HomeRank<C>, pawnRank: PawnRank<C>): ChessPiece[] {
     const board = this.board;
     
-    const pawns = Position.cols.map(col => new Pawn<C>(board, color, new Position(pawnRank, col)));
+    const pawns = Position.cols.map(col => new Pawn<C>(board, color, new Position(col, pawnRank)));
     return [
       // Home Rank: left to right
-      new Rook<C>(board, color, new Position(homeRank, "A")),
-      new Knight<C>(board, color, new Position(homeRank, "B")),
-      new Bishop<C>(board, color, new Position(homeRank, "C")),
-      new Queen<C>(board, color, new Position(homeRank, "D")),
-      new King<C>(board, color, new Position(homeRank, "E")),
-      new Bishop<C>(board, color, new Position(homeRank, "F")),
-      new Knight<C>(board, color, new Position(homeRank, "G")),
-      new Rook<C>(board, color, new Position(homeRank, "H")),
+      new Rook<C>(board, color,   new Position("A", homeRank)),
+      new Knight<C>(board, color, new Position("B", homeRank)),
+      new Bishop<C>(board, color, new Position("C", homeRank)),
+      new Queen<C>(board, color,  new Position("D", homeRank)),
+      new King<C>(board, color,   new Position("E", homeRank)),
+      new Bishop<C>(board, color, new Position("F", homeRank)),
+      new Knight<C>(board, color, new Position("G", homeRank)),
+      new Rook<C>(board, color,   new Position("H", homeRank)),
       // Pawn Rank:
       ...pawns
     ];

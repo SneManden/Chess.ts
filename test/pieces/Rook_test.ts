@@ -8,7 +8,7 @@ import { assertMovesEquals, pawnAt, rookAt } from "../testUtilities.ts";
 
 Deno.test("rook alone in corner should be able to move entire row and column", () => {
   const board = new Board();
-  const rook = new Rook(board, Color.White, new Position(1, "A"));
+  const rook = new Rook(board, Color.White, new Position("A", 1));
   assertMovesEquals(
     rook.validMoves(),
     [
@@ -20,8 +20,8 @@ Deno.test("rook alone in corner should be able to move entire row and column", (
 
 Deno.test("rook with pawn in front should only be able to move horizontally", () => {
   const board = new Board();
-  const rook = new Rook(board, Color.White, new Position(1, "A"));
-  new Pawn(board, Color.White, new Position(2, "A"));
+  const rook = new Rook(board, Color.White, new Position("A", 1));
+  new Pawn(board, Color.White, new Position("A", 2));
   assertMovesEquals(
     rook.validMoves(),
     ["B1", "C1", "D1", "E1", "F1", "G1", "H1"]
@@ -30,19 +30,19 @@ Deno.test("rook with pawn in front should only be able to move horizontally", ()
 
 Deno.test("rook cornered by pawn and knigh should not be able to move", () => {
   const board = new Board();
-  const rook = new Rook(board, Color.White, new Position(1, "A"));
-  new Pawn(board, Color.White, new Position(2, "A"));
-  new Knight(board, Color.White, new Position(1, "B"));
+  const rook = new Rook(board, Color.White, new Position("A", 1));
+  new Pawn(board, Color.White, new Position("A", 2));
+  new Knight(board, Color.White, new Position("B", 1));
   assertMovesEquals(rook.validMoves(), []);
 });
 
 Deno.test("rook should include opponnent in moves (attack)", () => {
   const board = new Board();
-  const rook = rookAt(board, Color.White, new Position(4, "D"));
-  pawnAt(board, Color.Black, new Position(2, "D")); // below
-  pawnAt(board, Color.White, new Position(6, "D")); // above
-  pawnAt(board, Color.Black, new Position(4, "B")); // left
-  pawnAt(board, Color.White, new Position(4, "F")); // right
+  const rook = rookAt(board, Color.White, Position.create("D4"));
+  pawnAt(board, Color.Black, Position.create("D2")); // below
+  pawnAt(board, Color.White, Position.create("D6")); // above
+  pawnAt(board, Color.Black, Position.create("B4")); // left
+  pawnAt(board, Color.White, Position.create("F4")); // right
   assertMovesEquals(
     rook.validMoves(),
     [
