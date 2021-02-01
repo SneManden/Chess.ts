@@ -37,7 +37,7 @@ export abstract class ChessPiece {
   }
 
   move(to: Position): Square {
-    if (!this.validMoves().includes(to)) {
+    if (!this.validMoves().map(p => p.toString()).includes(to.toString())) {
       throw new Error(`Invalid position; cannot move to ${to.toString()}`);
     }
     return this.board.replace(this, to);
@@ -55,7 +55,7 @@ export abstract class ChessPiece {
     }
   }
 
-  protected position(): Position | null {
+  position(): Position | null {
     return this.board.getPosition(this);
   }
 

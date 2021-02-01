@@ -23,7 +23,7 @@ I have made a bunch of tests. Run them by
 [ ] Implement move "En pessant" (when a pawn reaches back rank => exchange with choice of queen, rook, bishop, or knight)
 [x] Check (basic) move validity (own king must not be check by move)
 [ ] Check(mate) stuff
-[ ] Show taken pieces
+[x] Show taken pieces
 [x] Redo Position constructor to take arguments as (col, row) instead of (row, col)
 [ ] Allow for human to play
 [ ] Graphics

@@ -1,8 +1,19 @@
 import { ChessPiece } from "./pieces/ChessPiece.ts";
-import { Color, Piece, Square } from "./Game.ts";
+import { Color, HomeRank, PawnRank, Piece, Square } from "./Game.ts";
 import { Row, Col, Position } from "./Position.ts";
+import { Pawn } from "./pieces/Pawn.ts";
+import { Bishop } from "./pieces/Bishop.ts";
+import { King } from "./pieces/King.ts";
+import { Knight } from "./pieces/Knight.ts";
+import { Queen } from "./pieces/Queen.ts";
+import { Rook } from "./pieces/Rook.ts";
 
 export type BoardDict = { [R in Row]: { [C in Col]: Square } };
+
+export interface DrawOptions {
+  labels?: boolean;
+  offBoardPieces?: boolean;
+}
 
 export class Board {
   private DEBUG = false;
@@ -61,21 +72,22 @@ export class Board {
     // Try to make the move and check if:
     //    is king in Check => invalid move; undo move
     // otherwise, good to go
-    const prevPosition = this.getPosition(piece);
-    if (!prevPosition) {
+    const originalPosition = this.getPosition(piece);
+    if (!originalPosition) {
       throw new Error("Cannot check for invalid move for piece not on board");
     }
     const replaced = this.replace(piece, to);
-    if (this.isKingCheck(piece.color)) {
-      // Undo move
-      this.replace(piece, prevPosition);
-      if (replaced) {
-        this.replace(replaced, to);
-      }
-      return false;
+    const kingIsCheck = this.isKingCheck(piece.color);
+
+    this.undoMove(piece, to, replaced, originalPosition);
+    return !kingIsCheck;
+  }
+
+  private undoMove(piece: ChessPiece, move: Position, moveSquare: Square, originalPosition: Position): void {
+    this.replace(piece, originalPosition);
+    if (moveSquare) {
+      this.replace(moveSquare, move);
     }
-    
-    return true;
   }
 
   isKingCheck(color: Color): boolean {
@@ -93,7 +105,7 @@ export class Board {
     return this.underAttack(kingPosition, color);
   }
 
-  drawBoardString(): string {
+  drawBoardString(options: Partial<DrawOptions> = { labels: true, offBoardPieces: true }): string {
     const blackSquare = "■";
 
     const drawBlackSquare = (row: Row, col: Col) => {
@@ -103,7 +115,7 @@ export class Board {
 
     let result = "";
     for (const row of Position.rows.slice().reverse()) {
-      let rowString = "";
+      let rowString = `${options?.labels ? row : " "} `;
       for (const col of Position.cols) {
         const square = this.lookAt(new Position(col, row));
         if (square) {
@@ -114,9 +126,46 @@ export class Board {
           rowString += " ";
         }
       }
-      result += `${rowString}\n`;
+      result += `${rowString}`;
+      if (options?.offBoardPieces && row === 1) {
+        result += `   taken: ${this.whiteOffBoard.map(p => p.toString()).join("")}`;
+      } else if (options?.offBoardPieces && row === 8) {
+        result += `   taken: ${this.blackOffBoard.map(p => p.toString()).join("")}`;
+      }
+      result += "\n";
     }
+    result += `  ${Position.cols.join("")}`;
     return result;
+  }
+
+  createPieces<C extends Color>(color: C, homeRank: HomeRank<C>, pawnRank: PawnRank<C>): ChessPiece[] {
+    const pawns = Position.cols.map(col => new Pawn<C>(this, color, new Position(col, pawnRank)));
+    return [
+      // Home Rank: left to right
+      new Rook<C>(this, color,   new Position("A", homeRank)),
+      new Knight<C>(this, color, new Position("B", homeRank)),
+      new Bishop<C>(this, color, new Position("C", homeRank)),
+      new Queen<C>(this, color,  new Position("D", homeRank)),
+      new King<C>(this, color,   new Position("E", homeRank)),
+      new Bishop<C>(this, color, new Position("F", homeRank)),
+      new Knight<C>(this, color, new Position("G", homeRank)),
+      new Rook<C>(this, color,   new Position("H", homeRank)),
+      // Pawn Rank:
+      ...pawns
+    ];
+  }
+
+  get whiteOnBoard(): ChessPiece[] {
+    return this.white.filter(p => this.isOnBoard(p));
+  }
+  get whiteOffBoard(): ChessPiece[] {
+    return this.white.filter(p => this.isOffBoard(p));
+  }
+  get blackOnBoard(): ChessPiece[] {
+    return this.black.filter(p => this.isOnBoard(p));
+  }
+  get blackOffBoard(): ChessPiece[] {
+    return this.black.filter(p => this.isOffBoard(p));
   }
 
   private updatePosition(piece: ChessPiece, pos: Position | null): void {
@@ -145,5 +194,13 @@ export class Board {
       return rows;
     }, {})
     return dict as BoardDict;
+  }
+
+  private isOnBoard(piece: ChessPiece): boolean {
+    return this.getPosition(piece) !== null;
+  }
+
+  private isOffBoard(piece: ChessPiece): boolean {
+    return this.getPosition(piece) === null;
   }
 }

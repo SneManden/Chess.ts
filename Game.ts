@@ -41,8 +41,8 @@ export class Game {
   }
 
   setupNewGame(p1: Player, p2: Player): void {
-    const white = this.createPieces(Color.White, 1, 2);
-    const black = this.createPieces(Color.Black, 8, 7);
+    const white = this.board.createPieces(Color.White, 1, 2);
+    const black = this.board.createPieces(Color.Black, 8, 7);
 
     console.log("Board with pieces:");
     console.log(this.board.drawBoardString());
@@ -97,24 +97,5 @@ export class Game {
     console.groupEnd();
 
     console.log("Game ended");
-  }
-
-  private createPieces<C extends Color>(color: C, homeRank: HomeRank<C>, pawnRank: PawnRank<C>): ChessPiece[] {
-    const board = this.board;
-    
-    const pawns = Position.cols.map(col => new Pawn<C>(board, color, new Position(col, pawnRank)));
-    return [
-      // Home Rank: left to right
-      new Rook<C>(board, color,   new Position("A", homeRank)),
-      new Knight<C>(board, color, new Position("B", homeRank)),
-      new Bishop<C>(board, color, new Position("C", homeRank)),
-      new Queen<C>(board, color,  new Position("D", homeRank)),
-      new King<C>(board, color,   new Position("E", homeRank)),
-      new Bishop<C>(board, color, new Position("F", homeRank)),
-      new Knight<C>(board, color, new Position("G", homeRank)),
-      new Rook<C>(board, color,   new Position("H", homeRank)),
-      // Pawn Rank:
-      ...pawns
-    ];
   }
 }

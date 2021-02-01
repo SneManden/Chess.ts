@@ -1,5 +1,5 @@
 
-import { ChessPiece } from "../ChessPiece.ts";
+import { ChessPiece } from "../pieces/ChessPiece.ts";
 import { Position } from "../Position.ts";
 import { Move, Player } from "./Player.ts";
 
@@ -12,10 +12,15 @@ export class RandomPlayer extends Player {
 
   makeMove(): Move | "give up" {
     const randomPiece = this.getRandomPiece({ mustHaveMoves: true });
+
+    // console.log(this.board?.drawBoardString());
+    
+    console.log("makeMove() picked piece:", randomPiece?.name, "at", randomPiece?.position()?.toString(), "with moves:", randomPiece?.validMoves().map(p => p.toString()));
     if (!randomPiece) {
       return "give up";
     }
     const randomMove = this.getRandomMove(randomPiece);
+    console.log("makeMove() choose to move piece to position", randomMove.toString());
     return { piece: randomPiece, to: randomMove };
   }
 
