@@ -18,14 +18,14 @@ I have made a bunch of tests. Run them by
     deno test
 
 ## TODO
-[ ] Fix pristine
-[ ] Implement move "Castling"
-[ ] Implement move "En pessant" (when a pawn reaches back rank => exchange with choice of queen, rook, bishop, or knight)
-[x] Check (basic) move validity (own king must not be check by move)
-[ ] Check(mate) stuff
-[x] Show taken pieces
-[x] Redo Position constructor to take arguments as (col, row) instead of (row, col)
-[ ] Allow for human to play
-[ ] Graphics
-[ ] Much more
-[ ] Play with a stop watch
+* [ ] Fix pristine
+* [ ] Implement move "Castling"
+* [ ] Implement move "En pessant" (when a pawn reaches back rank => exchange with choice of queen, rook, bishop, or knight)
+* [x] Check (basic) move validity (own king must not be check by move)
+* [ ] Check(mate) stuff
+* [x] Show taken pieces
+* [x] Redo Position constructor to take arguments as (col, row) instead of (row, col)
+* [ ] Allow for human to play
+* [ ] Graphics
+* [ ] Much more
+* [ ] Play with a stop watch
