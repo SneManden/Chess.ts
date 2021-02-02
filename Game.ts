@@ -48,14 +48,14 @@ export class Game {
     p2.initialize(Color.Black, this.board, black);
 
     this.nextTurn = p1;
+
+    console.log(this.board.drawLargeBoardString());
   }
 
   async startGame(totalRounds = 100): Promise<void> {
     if (!this.playerWhite || !this.playerBlack) {
       throw new Error("Game needs players!");
     }
-
-    console.log(this.board.drawLargeBoardString());
     
     for (let round = 1; round <= totalRounds; round++) {
       // console.clear();

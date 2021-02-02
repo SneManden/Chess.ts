@@ -5,7 +5,6 @@ import { HumanPlayer } from "./players/HumanPlayer.ts";
 
 const game = new Game();
 
-// const p1 = new RandomPlayer("RandomPlayer1");
 const p1 = new HumanPlayer("HumanPlayer1");
 const p2 = new GreedyPlayer("GreedyPlayer2");
 

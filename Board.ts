@@ -116,9 +116,9 @@ export class Board {
     const bgWhite = 0x9c6508;
 
     const h3 = `${hbar}${hbar}${hbar}`;
-    const topline = Colors.white(Colors.bgRgb24(`${ul}${[...Array(7).keys()].map(_ => h3 + nt).join("")}${h3}${ur}`, bgBlack));
-    const midline = Colors.white(Colors.bgRgb24(`${wt}${[...Array(7).keys()].map(_ => h3 + plus).join("")}${h3}${et}`, bgBlack));
-    const botline = Colors.white(Colors.bgRgb24(`${ll}${[...Array(7).keys()].map(_ => h3 + st).join("")}${h3}${lr}`, bgBlack));
+    const topline = "  " + Colors.white(Colors.bgRgb24(`${ul}${[...Array(7).keys()].map(_ => h3 + nt).join("")}${h3}${ur}`, bgBlack));
+    const midline = "  " + Colors.white(Colors.bgRgb24(`${wt}${[...Array(7).keys()].map(_ => h3 + plus).join("")}${h3}${et}`, bgBlack));
+    const botline = "  " + Colors.white(Colors.bgRgb24(`${ll}${[...Array(7).keys()].map(_ => h3 + st).join("")}${h3}${lr}`, bgBlack));
     const tplBlack = (x: string) => Colors.bgRgb24(` ${x} `, bgBlack) + Colors.white(Colors.bgRgb24(vbar, bgBlack));
     const tplWhite = (x: string) => Colors.bgRgb24(` ${x} `, bgWhite) + Colors.white(Colors.bgRgb24(vbar, bgBlack));
     const drawBlackSquare = (col: Col, row: Row) => {
@@ -128,16 +128,17 @@ export class Board {
     const tpl = (x: string, col: Col, row: Row) => drawBlackSquare(col, row) ? tplBlack(x) : tplWhite(x);
     const dp = (s: Square) => s?(s.color === Color.White ? Colors.white(s.toString(true)):Colors.black(s.toString(true))):" ";
 
-    const rowString = (squares: [Square, Col, Row][]): string => {
-      return `${Colors.white(Colors.bgRgb24(vbar,bgBlack))}${squares.map(([s, c, r]) => tpl(dp(s), c, r)).join("")}`;
+    const rowString = (row: Row, squares: [Square, Col, Row][]): string => {
+      return `${row} ${Colors.white(Colors.bgRgb24(vbar,bgBlack))}${squares.map(([s, c, r]) => tpl(dp(s), c, r)).join("")}`;
     };
 
     const rowStrings = [];
     for (const row of Position.rows.slice().reverse()) {
       rowStrings.push(row === 8 ? topline : midline);
-      rowStrings.push(rowString(Position.cols.map(col => [this.lookAt(new Position(col, row)),col,row])));
+      rowStrings.push(rowString(row, Position.cols.map(col => [this.lookAt(new Position(col, row)),col,row])));
     }
     rowStrings.push(botline);
+    rowStrings.push(`    A   B   C   D   E   F   G   H`);
     return rowStrings.join("\n");
   }
 
