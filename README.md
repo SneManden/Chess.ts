@@ -12,6 +12,8 @@ Run the program by running:
 
     deno run main.ts
 
+![Starting positions](https://github.com/SneManden/Chess.ts/blob/main/doc/img/demo.png?raw=true)
+
 ## Tests
 I have made a bunch of tests. Run them by
 
