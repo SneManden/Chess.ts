@@ -2,9 +2,11 @@ import { Board } from "../Board.ts";
 import { ChessPiece } from "../pieces/ChessPiece.ts";
 import { Color, PawnRank, Piece } from "../Game.ts";
 import { Col, Position } from "../Position.ts";
-import { isNullish, notNullish } from "../utility.ts";
+import { notNullish } from "../utility.ts";
 
 export class Pawn<C extends Color> extends ChessPiece {
+  readonly notation = "";
+
   constructor(board: Board, color: C, pos: Position<Col, PawnRank<C>> | null){
     super(board, Piece.Pawn, color, pos);
   }

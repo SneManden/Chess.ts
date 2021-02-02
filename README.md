@@ -29,7 +29,7 @@ I have made a bunch of tests. Run them by
 * [ ] Check(mate) stuff
 * [x] Show taken pieces
 * [x] Redo Position constructor to take arguments as (col, row) instead of (row, col)
-* [ ] Allow for human to play
+* [x] Allow for human to play
 * [x] Better graphics
 * [ ] Even better graphics
 * [ ] Much more

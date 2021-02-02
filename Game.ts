@@ -38,8 +38,6 @@ export class Game {
     const white = this.board.createPieces(Color.White, 1, 2);
     const black = this.board.createPieces(Color.Black, 8, 7);
 
-    console.log(this.board.drawLargeBoardString());
-
     this.white = white;
     this.black = black;
 
@@ -50,17 +48,17 @@ export class Game {
     p2.initialize(Color.Black, this.board, black);
 
     this.nextTurn = p1;
-
-    // this.board.initialize(white, black);
   }
 
   async startGame(totalRounds = 100): Promise<void> {
     if (!this.playerWhite || !this.playerBlack) {
       throw new Error("Game needs players!");
     }
+
+    console.log(this.board.drawLargeBoardString());
     
     for (let round = 1; round <= totalRounds; round++) {
-      console.clear();
+      // console.clear();
       const activePlayer = this.nextTurn;
       if (!activePlayer) {
         break;
@@ -77,13 +75,13 @@ export class Game {
       
       // const replacement = this.board.replace(move.piece, move.to);
       const replacement = move.piece.move(move.to);
-      console.log(activePlayer.name, "moves", move.piece.name, "to", move.to.toString(), ...(replacement ? ["takes", replacement.name]:[]));
+      console.log(move.piece.name, "to", move.to.toString(), ...(replacement ? ["takes", replacement.name]:[]));
 
       console.log(this.board.drawLargeBoardString());
 
       this.nextTurn = other;
       console.groupEnd();
-      await delay(1_000);
+      await delay(2_000);
     }
     console.groupEnd();
 

@@ -3,11 +3,14 @@ import { Color, Piece, Square } from "../Game.ts";
 import { Position } from "../Position.ts";
 import { notNullish, uuidv4 } from "../utility.ts";
 
+export type PieceNotation = "" | "R" | "N" | "B" | "Q" | "K";
+
 export abstract class ChessPiece {
   private _pristine = true;
   
   readonly id = uuidv4();
   readonly name!: string;
+  abstract readonly notation: PieceNotation;
 
   get pristine(): boolean { return this._pristine; }
 

@@ -1,10 +1,12 @@
 import { Board } from "../Board.ts";
 import { ChessPiece } from "../pieces/ChessPiece.ts";
 import { Color, HomeRank, Piece } from "../Game.ts";
-import { Col, Position } from "../Position.ts";
+import { Position } from "../Position.ts";
 import { notNullish } from "../utility.ts";
 
 export class Bishop<C extends Color> extends ChessPiece {
+  readonly notation = "B";
+
   constructor(board: Board, color: C, pos: Position<"C" | "F", HomeRank<C>> | null) {
     super(board, Piece.Bishop, color, pos);
   }
