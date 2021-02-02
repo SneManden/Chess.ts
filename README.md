@@ -20,7 +20,8 @@ I have made a bunch of tests. Run them by
 ## TODO
 * [x] Fix pristine
 * [ ] Implement move "Castling"
-* [ ] Implement move "En pessant" (when a pawn reaches back rank => exchange with choice of queen, rook, bishop, or knight)
+* [ ] Implement move "Promotion" (when a pawn reaches back rank => exchange with choice of queen, rook, bishop, or knight)
+* [ ] Implement "en passant" (case where pawn is taken by another pawn after an initially long move)
 * [x] Check (basic) move validity (own king must not be check by move)
 * [ ] Advanced chess rules (see rules about draws, stalemate, etc.)
 * [ ] Check(mate) stuff
