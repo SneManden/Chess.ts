@@ -13,17 +13,7 @@ export class HumanPlayer extends Player {
       give up   exit game
 
     Make a move:
-      <piece><capture?><to>
-      
-      examples (simple moves):
-        Qd4     Queen to D4
-        d3      (Pawn) to D3
-      examples (captures):
-        Bxe5    Bishop captures piece on E5
-      examples (disambiguation):
-        Rdf8    Rook of column D to F8 (if the other rook can also move to F8)
-        R1a3    Rook of row 1 to A3 (if the other rook can also move to A3)
-        Qh4e1   Queen at H4 to E1 (if other (promoted) queens can also move to E1)
+      <piece><departing col?><departing row?><capture?><to>
 
     Notation:
       (none)    pawn
@@ -33,6 +23,18 @@ export class HumanPlayer extends Player {
       Q         Queen
       K         King
       x         capture (optional)
+      a-h       column/file
+      1-8       row/rank
+      
+      examples (simple moves):
+        Qd4     Queen to D4
+        d3      Pawn to D3
+      examples (captures):
+        Bxe5    Bishop captures piece on E5
+      examples (disambiguation):
+        Rdf8    Rook of column D to F8 (if the other rook can also move to F8)
+        R1a3    Rook of row 1 to A3 (if the other rook can also move to A3)
+        Qh4e1   Queen at H4 to E1 (if other (promoted) queens can also move to E1)
   `;
 
   constructor(id: string) {
