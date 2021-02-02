@@ -1,30 +1,22 @@
 import { ChessPiece } from "../pieces/ChessPiece.ts";
 import { Piece } from "../Game.ts";
 import { Position } from "../Position.ts";
-import { Move, Player } from "./Player.ts";
+import { Move } from "./Player.ts";
+import { RandomPlayer } from "./RandomPlayer.ts";
 
-export class GreedyPlayer extends Player {
+export class GreedyPlayer extends RandomPlayer {
   constructor(
     id: string
   ) {
     super(id);
   }
 
-  makeMove(): Move | "give up" {
+  makeMove(): Promise<Move | "give up"> {
     const bestAttackMove = this.getBestAttackingMove();
     if (bestAttackMove) {
-      return bestAttackMove;
+      return Promise.resolve(bestAttackMove);
     }
-    return this.randomMove();
-  }
-
-  private randomMove(): Move | "give up" {
-    const piece = this.getRandomPiece({ mustHaveMoves: true });
-    if (!piece) {
-      return "give up";
-    }
-    const randomMove = this.getRandomMove(piece);
-    return { piece, to: randomMove };
+    return super.makeMove();
   }
 
   private getBestAttackingMove(): Move | null {
@@ -51,29 +43,6 @@ export class GreedyPlayer extends Player {
         -
         this.importance(this.board?.lookAt(a) ?? null)
       );
-  }
-
-  private getRandomPiece(options: { mustHaveMoves: boolean; }): ChessPiece | null {
-    const pieces = options.mustHaveMoves ? this.pieces.filter(p => p.validMoves().length > 0) : this.pieces;
-
-    if (pieces.length === 0) {
-      return null;
-    }
-
-    const randomIndex = Math.floor(Math.random() * pieces.length);
-    const randomPiece = pieces[randomIndex];
-    return randomPiece;
-  }
-
-  private getRandomMove(piece: ChessPiece): Position {
-    const moves = piece.validMoves();
-    if (moves.length === 0) {
-      throw new Error("Cannot get random move: Piece cannot move!");
-    }
-
-    const randomIndex = Math.floor(Math.random() * moves.length);
-    const randomMove = moves[randomIndex];
-    return randomMove;
   }
 
   private importance(piece: ChessPiece | null): 0 | 1 | 2 | 3 | 4 {

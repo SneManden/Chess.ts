@@ -10,21 +10,16 @@ export class RandomPlayer extends Player {
     super(id);
   }
 
-  makeMove(): Move | "give up" {
+  makeMove(): Promise<Move | "give up"> {
     const randomPiece = this.getRandomPiece({ mustHaveMoves: true });
-
-    // console.log(this.board?.drawBoardString());
-    
-    console.log("makeMove() picked piece:", randomPiece?.name, "at", randomPiece?.position()?.toString(), "with moves:", randomPiece?.validMoves().map(p => p.toString()));
     if (!randomPiece) {
-      return "give up";
+      return Promise.resolve("give up");
     }
     const randomMove = this.getRandomMove(randomPiece);
-    console.log("makeMove() choose to move piece to position", randomMove.toString());
-    return { piece: randomPiece, to: randomMove };
+    return Promise.resolve({ piece: randomPiece, to: randomMove });
   }
 
-  private getRandomPiece(options: { mustHaveMoves: boolean }): ChessPiece | null {
+  protected getRandomPiece(options: { mustHaveMoves: boolean }): ChessPiece | null {
     const pieces = options.mustHaveMoves ? this.pieces.filter(p => p.validMoves().length > 0) : this.pieces;
 
     if (pieces.length === 0) {
@@ -36,7 +31,7 @@ export class RandomPlayer extends Player {
     return randomPiece;
   }
 
-  private getRandomMove(piece: ChessPiece): Position {
+  protected getRandomMove(piece: ChessPiece): Position {
     const moves = piece.validMoves();
     if (moves.length === 0) {
       throw new Error("Cannot get random move: Piece cannot move!");

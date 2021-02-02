@@ -26,7 +26,7 @@ export abstract class Player {
     this.pieces = pieces;
   }
 
-  abstract makeMove(): Move | "give up";
+  abstract makeMove(): Promise<Move | "give up">;
 
   protected isOpponent(other: Square): boolean {
     return notNullish(other) && other.color !== Color.Undefined && other.color !== this.color;

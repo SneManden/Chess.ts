@@ -8,4 +8,4 @@ const p1 = new RandomPlayer("RandomPlayer1");
 const p2 = new GreedyPlayer("GreedyPlayer2");
 
 game.setupNewGame(p1, p2);
-game.startGame();
+await game.startGame();

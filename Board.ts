@@ -105,7 +105,7 @@ export class Board {
     return this.underAttack(kingPosition, color);
   }
 
-  drawBoardString(options: Partial<DrawOptions> = { labels: true, offBoardPieces: true }): string {
+  drawSimpleBoardString(options: Partial<DrawOptions> = { labels: true, offBoardPieces: true }): string {
     const blackSquare = "■";
 
     const drawBlackSquare = (row: Row, col: Col) => {

@@ -1,13 +1,7 @@
 import { Board } from "./Board.ts";
 import { ChessPiece } from "./pieces/ChessPiece.ts";
-import { Bishop } from "./pieces/Bishop.ts";
-import { King } from "./pieces/King.ts";
-import { Knight } from "./pieces/Knight.ts";
-import { Queen } from "./pieces/Queen.ts";
-import { Pawn } from "./pieces/Pawn.ts";
-import { Rook } from "./pieces/Rook.ts";
-import { Position } from "./Position.ts";
 import { Player } from "./players/Player.ts";
+import { delay } from 'https://deno.land/x/delay@v0.2.0/mod.ts';
 
 export enum Piece {
   Pawn,   // Bonde
@@ -45,7 +39,7 @@ export class Game {
     const black = this.board.createPieces(Color.Black, 8, 7);
 
     console.log("Board with pieces:");
-    console.log(this.board.drawBoardString());
+    console.log(this.board.drawSimpleBoardString());
 
     this.white = white;
     this.black = black;
@@ -61,12 +55,13 @@ export class Game {
     // this.board.initialize(white, black);
   }
 
-  startGame(totalRounds = 100): void {
+  async startGame(totalRounds = 100): Promise<void> {
     if (!this.playerWhite || !this.playerBlack) {
       throw new Error("Game needs players!");
     }
     
     for (let round = 1; round <= totalRounds; round++) {
+      console.clear();
       const activePlayer = this.nextTurn;
       if (!activePlayer) {
         break;
@@ -75,24 +70,21 @@ export class Game {
 
       const other = activePlayer === this.playerWhite ? this.playerBlack : this.playerWhite;
 
-      const move = activePlayer.makeMove();
+      const move = await activePlayer.makeMove();
       if (move === "give up") {
         console.log(activePlayer.name, "has given up.", other.name, "wins");
         break;
-      } else {
-        console.log(activePlayer.name, "moves", move.piece.name, "to", move.to.toString());
       }
-
+      
       // const replacement = this.board.replace(move.piece, move.to);
       const replacement = move.piece.move(move.to);
-      if (replacement) {
-        console.log("takes", replacement.name);
-      }
+      console.log(activePlayer.name, "moves", move.piece.name, "to", move.to.toString(), ...(replacement ? ["takes", replacement.name]:[]));
 
-      console.log(this.board.drawBoardString());
+      console.log(this.board.drawSimpleBoardString());
 
       this.nextTurn = other;
       console.groupEnd();
+      await delay(1_000);
     }
     console.groupEnd();
 
