@@ -28,6 +28,7 @@ I have made a bunch of tests. Run them by
 * [x] Show taken pieces
 * [x] Redo Position constructor to take arguments as (col, row) instead of (row, col)
 * [ ] Allow for human to play
-* [ ] Graphics
+* [x] Better graphics
+* [ ] Even better graphics
 * [ ] Much more
 * [ ] Play with a stop watch
