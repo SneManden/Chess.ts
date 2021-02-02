@@ -7,6 +7,7 @@ import { King } from "./pieces/King.ts";
 import { Knight } from "./pieces/Knight.ts";
 import { Queen } from "./pieces/Queen.ts";
 import { Rook } from "./pieces/Rook.ts";
+import * as Colors from "https://deno.land/std/fmt/colors.ts";
 
 export type BoardDict = { [R in Row]: { [C in Col]: Square } };
 
@@ -103,6 +104,41 @@ export class Board {
       return false;
     }
     return this.underAttack(kingPosition, color);
+  }
+
+  // Inspiration from https://www.daniweb.com/programming/software-development/code/423640/unicode-chessboard-in-a-terminal
+  drawLargeBoardString(): string {
+    const allBoxDrawingCharacters = [...Array(200).keys()].map(i => String.fromCharCode(9472 + i));
+    const boxChars = [2, 0, 12, 16, 20, 24, 44, 52, 28, 36, 60].map(i => allBoxDrawingCharacters[i]);
+    const [vbar, hbar, ul, ur, ll, lr, nt, st, wt, et, plus] = boxChars;
+
+    const bgBlack = 0x402902;
+    const bgWhite = 0x9c6508;
+
+    const h3 = `${hbar}${hbar}${hbar}`;
+    const topline = Colors.white(Colors.bgRgb24(`${ul}${[...Array(7).keys()].map(_ => h3 + nt).join("")}${h3}${ur}`, bgBlack));
+    const midline = Colors.white(Colors.bgRgb24(`${wt}${[...Array(7).keys()].map(_ => h3 + plus).join("")}${h3}${et}`, bgBlack));
+    const botline = Colors.white(Colors.bgRgb24(`${ll}${[...Array(7).keys()].map(_ => h3 + st).join("")}${h3}${lr}`, bgBlack));
+    const tplBlack = (x: string) => Colors.bgRgb24(` ${x} `, bgBlack) + Colors.white(Colors.bgRgb24(vbar, bgBlack));
+    const tplWhite = (x: string) => Colors.bgRgb24(` ${x} `, bgWhite) + Colors.white(Colors.bgRgb24(vbar, bgBlack));
+    const drawBlackSquare = (col: Col, row: Row) => {
+      const colIndex = (Position.cols.indexOf(col) + 1) % 2;
+      return (((row % 2) + colIndex) % 2) === 0;
+    }
+    const tpl = (x: string, col: Col, row: Row) => drawBlackSquare(col, row) ? tplBlack(x) : tplWhite(x);
+    const dp = (s: Square) => s?(s.color === Color.White ? Colors.white(s.toString(true)):Colors.black(s.toString(true))):" ";
+
+    const rowString = (squares: [Square, Col, Row][]): string => {
+      return `${Colors.white(Colors.bgRgb24(vbar,bgBlack))}${squares.map(([s, c, r]) => tpl(dp(s), c, r)).join("")}`;
+    };
+
+    const rowStrings = [];
+    for (const row of Position.rows.slice().reverse()) {
+      rowStrings.push(row === 8 ? topline : midline);
+      rowStrings.push(rowString(Position.cols.map(col => [this.lookAt(new Position(col, row)),col,row])));
+    }
+    rowStrings.push(botline);
+    return rowStrings.join("\n");
   }
 
   drawSimpleBoardString(options: Partial<DrawOptions> = { labels: true, offBoardPieces: true }): string {

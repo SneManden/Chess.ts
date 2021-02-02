@@ -43,14 +43,14 @@ export abstract class ChessPiece {
     return this.board.replace(this, to);
   }
 
-  toString(): string {
+  toString(ignoreColor = false): string {
     switch (this.piece) {
-      case Piece.Pawn: return this.color === Color.White ? "♙" : "♟︎";
-      case Piece.Rook: return this.color === Color.White ? "♖" : "♜";
-      case Piece.Knight: return this.color === Color.White ? "♘" : "♞";
-      case Piece.Bishop: return this.color === Color.White ? "♗" : "♝";
-      case Piece.Queen: return this.color === Color.White ? "♕" : "♛";
-      case Piece.King: return this.color === Color.White ? "♔" : "♚";
+      case Piece.Pawn: return this.color === Color.White && !ignoreColor ? "♙" : "♟︎";
+      case Piece.Rook: return this.color === Color.White && !ignoreColor ? "♖" : "♜";
+      case Piece.Knight: return this.color === Color.White && !ignoreColor ? "♘" : "♞";
+      case Piece.Bishop: return this.color === Color.White && !ignoreColor ? "♗" : "♝";
+      case Piece.Queen: return this.color === Color.White && !ignoreColor ? "♕" : "♛";
+      case Piece.King: return this.color === Color.White && !ignoreColor ? "♔" : "♚";
       default: return "";
     }
   }

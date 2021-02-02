@@ -38,8 +38,7 @@ export class Game {
     const white = this.board.createPieces(Color.White, 1, 2);
     const black = this.board.createPieces(Color.Black, 8, 7);
 
-    console.log("Board with pieces:");
-    console.log(this.board.drawSimpleBoardString());
+    console.log(this.board.drawLargeBoardString());
 
     this.white = white;
     this.black = black;
@@ -80,7 +79,7 @@ export class Game {
       const replacement = move.piece.move(move.to);
       console.log(activePlayer.name, "moves", move.piece.name, "to", move.to.toString(), ...(replacement ? ["takes", replacement.name]:[]));
 
-      console.log(this.board.drawSimpleBoardString());
+      console.log(this.board.drawLargeBoardString());
 
       this.nextTurn = other;
       console.groupEnd();
