@@ -5,6 +5,8 @@ import { Pawn } from "../pieces/Pawn.ts";
 import { Position } from "../Position.ts";
 import { Rook } from "../pieces/Rook.ts";
 import { King } from "../pieces/King.ts";
+import { Move } from "../players/Player.ts";
+import { Piece } from "../pieces/ChessPiece.ts";
 
 // When TS 4.2 is available, use: expected: `${Col}${Row}`[]
 export function assertMovesEquals(moves: Position[], expected: string[], msg?: string): void {
@@ -15,12 +17,19 @@ export function assertMovesEquals(moves: Position[], expected: string[], msg?: s
 
 export function assertMovesDoesNotContain(moves: Position[], notExpected: string[], msg?: string): void {
   const movesMapped = moves.slice().map(m => m.toString());
-  assertEquals(movesMapped, movesMapped.filter(e => !notExpected.includes(e)), msg);
-  // return assert(notExpected.every(element => !movesMapped.includes(element)), msg);
+  return assertEquals(movesMapped, movesMapped.filter(e => !notExpected.includes(e)), msg);
 }
 
 export function assertPositionEquals(position: Position | null | undefined, value: string, msg?: string): void {
   return assertEquals(position?.toString(), value);
+}
+
+export function assertMoveIs(move: Move | null, piece: Piece, from: Position, to: Position, msg?: string): void {
+  assertEquals({
+    piece: move?.piece.piece,
+    from: move?.piece.position()?.toString(),
+    to: move?.to.toString(),
+  }, { piece, from: from.toString(), to: to.toString() }, msg);
 }
 
 export function pawnAt<C extends Color>(board: Board, color: C, at: Position): Pawn<C> {

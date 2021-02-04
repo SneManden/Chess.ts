@@ -126,7 +126,7 @@ export class Board {
       return (((row % 2) + colIndex) % 2) === 0;
     }
     const tpl = (x: string, col: Col, row: Row) => drawBlackSquare(col, row) ? tplBlack(x) : tplWhite(x);
-    const dp = (s: Square) => s?(s.color === Color.White ? Colors.white(s.toString(true)):Colors.black(s.toString(true))):" ";
+    const dp = (s: Square) => s?(s.color === Color.White ? Colors.white(s.pieceIcon(true)):Colors.black(s.pieceIcon(true))):" ";
 
     const rowString = (row: Row, squares: [Square, Col, Row][]): string => {
       return `${row} ${Colors.white(Colors.bgRgb24(vbar,bgBlack))}${squares.map(([s, c, r]) => tpl(dp(s), c, r)).join("")}`;
@@ -156,7 +156,7 @@ export class Board {
       for (const col of Position.cols) {
         const square = this.lookAt(new Position(col, row));
         if (square) {
-          rowString += square.toString();
+          rowString += square.pieceIcon();
         } else if (drawBlackSquare(row, col)) {
           rowString += blackSquare;
         } else {
@@ -165,9 +165,9 @@ export class Board {
       }
       result += `${rowString}`;
       if (options?.offBoardPieces && row === 1) {
-        result += `   taken: ${this.whiteOffBoard.map(p => p.toString()).join("")}`;
+        result += `   taken: ${this.whiteOffBoard.map(p => p.pieceIcon()).join("")}`;
       } else if (options?.offBoardPieces && row === 8) {
-        result += `   taken: ${this.blackOffBoard.map(p => p.toString()).join("")}`;
+        result += `   taken: ${this.blackOffBoard.map(p => p.pieceIcon()).join("")}`;
       }
       result += "\n";
     }

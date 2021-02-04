@@ -27,7 +27,7 @@ export abstract class ChessPiece {
     protected readonly board: Board,
     public readonly piece: Piece,
     public readonly color: Color,
-    private initialPosition: Position | null
+    initialPosition: Position | null
   ) {
     this.name = this.createName();
     if (initialPosition) {
@@ -61,7 +61,11 @@ export abstract class ChessPiece {
     return this.board.replace(this, to);
   }
 
-  toString(ignoreColor = false): string {
+  toString(): string {
+    return `${this.name} @ ${this.position() ?? "not on board"}`;
+  }
+
+  pieceIcon(ignoreColor = false): string {
     switch (this.piece) {
       case Piece.Pawn: return this.color === Color.White && !ignoreColor ? "♙" : "♟︎";
       case Piece.Rook: return this.color === Color.White && !ignoreColor ? "♖" : "♜";
