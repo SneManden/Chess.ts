@@ -14,7 +14,7 @@ export abstract class Player {
   
   public color: Color = Color.Undefined;
   protected board: Board | null = null;
-  protected pieces: ChessPiece[] = [];
+  private pieces: ChessPiece[] = [];
 
   constructor(
     public readonly name: string,
@@ -24,6 +24,14 @@ export abstract class Player {
     this.color = color;
     this.board = board;
     this.pieces = pieces;
+  }
+
+  get availablePieces(): ChessPiece[] {
+    return this.pieces.filter(p => p.isOnBoard);
+  }
+
+  get takenPieces(): ChessPiece[] {
+    return this.pieces.filter(p => p.isOnBoard);
   }
 
   abstract makeMove(): Promise<Move | "give up">;

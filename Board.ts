@@ -193,16 +193,16 @@ export class Board {
   }
 
   get whiteOnBoard(): ChessPiece[] {
-    return this.white.filter(p => this.isOnBoard(p));
+    return this.white.filter(p => p.isOnBoard);
   }
   get whiteOffBoard(): ChessPiece[] {
-    return this.white.filter(p => this.isOffBoard(p));
+    return this.white.filter(p => !p.isOnBoard);
   }
   get blackOnBoard(): ChessPiece[] {
-    return this.black.filter(p => this.isOnBoard(p));
+    return this.black.filter(p => p.isOnBoard);
   }
   get blackOffBoard(): ChessPiece[] {
-    return this.black.filter(p => this.isOffBoard(p));
+    return this.black.filter(p => !p.isOnBoard);
   }
 
   private updatePosition(piece: ChessPiece, pos: Position | null): void {
@@ -231,13 +231,5 @@ export class Board {
       return rows;
     }, {})
     return dict as BoardDict;
-  }
-
-  private isOnBoard(piece: ChessPiece): boolean {
-    return this.getPosition(piece) !== null;
-  }
-
-  private isOffBoard(piece: ChessPiece): boolean {
-    return this.getPosition(piece) === null;
   }
 }

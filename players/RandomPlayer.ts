@@ -20,7 +20,7 @@ export class RandomPlayer extends Player {
   }
 
   protected getRandomPiece(options: { mustHaveMoves: boolean }): ChessPiece | null {
-    const pieces = options.mustHaveMoves ? this.pieces.filter(p => p.validMoves().length > 0) : this.pieces;
+    const pieces = options.mustHaveMoves ? this.availablePieces.filter(p => p.validMoves().length > 0) : this.availablePieces;
 
     if (pieces.length === 0) {
       return null;

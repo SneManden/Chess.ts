@@ -20,7 +20,7 @@ export class GreedyPlayer extends RandomPlayer {
   }
 
   private getBestAttackingMove(): Move | null {
-    const attackingPieces = this.pieces
+    const attackingPieces = this.availablePieces
       .map(p => ({ piece: p, attackMoves: this.attackingMoves(p) }))
       .filter(({ attackMoves }) => attackMoves.length > 0);
     if (attackingPieces.length === 0) {

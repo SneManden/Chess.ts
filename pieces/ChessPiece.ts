@@ -29,6 +29,9 @@ export abstract class ChessPiece {
   protected abstract moves(): Position[];
 
   validMoves(skipValidityCheck = false): Position[] {
+    if (!this.isOnBoard) {
+      return [];
+    }
     return this.moves()
       .filter(pos => !this.isTeammate(this.board.lookAt(pos)))
       .filter(pos => skipValidityCheck || this.board.isValidMove(this, pos));
@@ -39,6 +42,9 @@ export abstract class ChessPiece {
   }
 
   move(to: Position): Square {
+    if (!this.isOnBoard) {
+      throw new Error("Piece cannot make a move: It's not on the board!");
+    }
     if (!this.validMoves().map(p => p.toString()).includes(to.toString())) {
       throw new Error(`Invalid position; cannot move to ${to.toString()}`);
     }
