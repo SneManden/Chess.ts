@@ -19,6 +19,10 @@ export function assertMovesDoesNotContain(moves: Position[], notExpected: string
   // return assert(notExpected.every(element => !movesMapped.includes(element)), msg);
 }
 
+export function assertPositionEquals(position: Position | null | undefined, value: string, msg?: string): void {
+  return assertEquals(position?.toString(), value);
+}
+
 export function pawnAt<C extends Color>(board: Board, color: C, at: Position): Pawn<C> {
   const pawn = new Pawn(board, color, null);
   board.add(pawn, at);

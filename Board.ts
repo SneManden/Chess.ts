@@ -1,5 +1,5 @@
-import { ChessPiece } from "./pieces/ChessPiece.ts";
-import { Color, HomeRank, PawnRank, Piece, Square } from "./Game.ts";
+import { ChessPiece, Piece } from "./pieces/ChessPiece.ts";
+import { Color, HomeRank, PawnRank, Square } from "./Game.ts";
 import { Row, Col, Position } from "./Position.ts";
 import { Pawn } from "./pieces/Pawn.ts";
 import { Bishop } from "./pieces/Bishop.ts";

@@ -1,5 +1,5 @@
 import { ChessPiece } from "../pieces/ChessPiece.ts";
-import { Piece } from "../Game.ts";
+import { Piece } from "../pieces/ChessPiece.ts";
 import { Position } from "../Position.ts";
 import { Move } from "./Player.ts";
 import { RandomPlayer } from "./RandomPlayer.ts";

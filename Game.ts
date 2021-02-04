@@ -3,15 +3,6 @@ import { ChessPiece } from "./pieces/ChessPiece.ts";
 import { Player } from "./players/Player.ts";
 import { delay } from 'https://deno.land/x/delay@v0.2.0/mod.ts';
 
-export enum Piece {
-  Pawn,   // Bonde
-  Rook,   // Tårn
-  Knight, // Hest
-  Bishop, // Løber
-  Queen,  // Dronning
-  King,   // Konge
-}
-
 export enum Color { Undefined = 0, White, Black }
 
 export type HomeRank<C extends Color> = C extends Color.White ? 1 : 8;
@@ -22,9 +13,6 @@ export type Square = ChessPiece | Empty;
 
 export class Game {
   private board = new Board();
-
-  private white: ChessPiece[] = [];
-  private black: ChessPiece[] = [];
 
   private playerWhite: Player | null = null;
   private playerBlack: Player | null = null;
@@ -37,9 +25,6 @@ export class Game {
   setupNewGame(p1: Player, p2: Player): void {
     const white = this.board.createPieces(Color.White, 1, 2);
     const black = this.board.createPieces(Color.Black, 8, 7);
-
-    this.white = white;
-    this.black = black;
 
     this.playerWhite = p1;
     this.playerBlack = p2;

@@ -1,7 +1,16 @@
 import { Board } from "../Board.ts";
-import { Color, Piece, Square } from "../Game.ts";
+import { Color, Square } from "../Game.ts";
 import { Position } from "../Position.ts";
 import { notNullish, uuidv4 } from "../utility.ts";
+
+export enum Piece {
+  Pawn,   // Bonde
+  Rook,   // Tårn
+  Knight, // Hest
+  Bishop, // Løber
+  Queen,  // Dronning
+  King,   // Konge
+}
 
 export type PieceNotation = "" | "R" | "N" | "B" | "Q" | "K";
 
