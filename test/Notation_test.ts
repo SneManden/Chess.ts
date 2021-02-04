@@ -1,10 +1,10 @@
-import { assert, assertEquals } from "https://deno.land/std@0.85.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.85.0/testing/asserts.ts";
 import { Board } from "../Board.ts";
 import { Color } from "../Game.ts";
 import { Piece } from "../pieces/ChessPiece.ts";
 import { Notation } from "../Notation.ts";
 import { ChessPiece } from "../pieces/ChessPiece.ts";
-import { assertMoveIs as assertMoveEquals, assertPositionEquals } from "./testUtilities.ts";
+import { assertMoveIs as assertMoveEquals } from "./testUtilities.ts";
 import { Position } from "../Position.ts";
 
 interface TestGame {

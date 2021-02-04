@@ -11,7 +11,17 @@ export type PawnRank<C extends Color> = C extends Color.White ? 2 : 7;
 export type Empty = null;
 export type Square = ChessPiece | Empty;
 
+export interface GameOptions {
+  delay: number | null;
+  maxRounds: number;
+}
+
 export class Game {
+  readonly DEFAULT_GAME_OPTIONS: GameOptions = {
+    delay: 1_000,
+    maxRounds: 100,
+  };
+  
   private board = new Board();
 
   private playerWhite: Player | null = null;
@@ -37,13 +47,14 @@ export class Game {
     console.log(this.board.drawLargeBoardString());
   }
 
-  async startGame(totalRounds = 100): Promise<void> {
+  async startGame(options?: Partial<GameOptions>): Promise<void> {
     if (!this.playerWhite || !this.playerBlack) {
       throw new Error("Game needs players!");
     }
+
+    const opt: GameOptions = { ...this.DEFAULT_GAME_OPTIONS, ...options };
     
-    for (let round = 1; round <= totalRounds; round++) {
-      // console.clear();
+    for (let round = 1; round <= opt.maxRounds; round++) {
       const activePlayer = this.nextTurn;
       if (!activePlayer) {
         break;
@@ -58,7 +69,6 @@ export class Game {
         break;
       }
       
-      // const replacement = this.board.replace(move.piece, move.to);
       const replacement = move.piece.move(move.to);
       console.log(move.piece.name, "to", move.to.toString(), ...(replacement ? ["takes", replacement.name]:[]));
 
@@ -66,7 +76,9 @@ export class Game {
 
       this.nextTurn = other;
       console.groupEnd();
-      await delay(2_000);
+      if (opt.delay) {
+        await delay(opt.delay);
+      }
     }
     console.groupEnd();
 

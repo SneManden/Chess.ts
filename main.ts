@@ -6,7 +6,8 @@ import { HumanPlayer } from "./players/HumanPlayer.ts";
 const game = new Game();
 
 const p1 = new HumanPlayer("HumanPlayer1");
-const p2 = new GreedyPlayer("GreedyPlayer2");
+const p2 = new GreedyPlayer("GreedyPlayer1");
+// const p2 = new RandomPlayer("RandomPlayer2");
 
 game.setupNewGame(p1, p2);
 await game.startGame();

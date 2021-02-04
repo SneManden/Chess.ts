@@ -8,7 +8,7 @@ export class Rook<C extends Color> extends ChessPiece {
   readonly notation = "R";
 
   constructor(board: Board, color: C, pos: Position<"A" | "H", HomeRank<C>> | null) {
-    super(board, Piece.Pawn, color, pos);
+    super(board, Piece.Rook, color, pos);
   }
 
   protected moves(): Position[] {
