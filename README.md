@@ -64,11 +64,14 @@ I have made a bunch of tests. Run them by
 * [ ] Implement "en passant" (case where pawn is taken by another pawn after an initially long move)
 * [x] Check (basic) move validity (own king must not be check by move)
 * [ ] Advanced chess rules (see rules about draws, stalemate, etc.)
-* [ ] Check(mate) stuff
+* [x] Check(mate) stuff
+* [ ] Fix possible bug in check(mate) stuff
 * [x] Show taken pieces
 * [x] Redo Position constructor to take arguments as (col, row) instead of (row, col)
 * [x] Allow for human to play
 * [x] Better graphics
+* [x] Algebraic Notation
 * [ ] Even better graphics
 * [ ] Much more
 * [ ] Play with a stop watch
+* [ ] Reply match from moves list

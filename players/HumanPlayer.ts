@@ -36,8 +36,8 @@ export class HumanPlayer extends Player {
         Qh4e1   Queen at H4 to E1 (if other (promoted) queens can also move to E1)
   `;
 
-  constructor(id: string) {
-    super(id);
+  constructor(name: string) {
+    super(name);
   }
 
   async makeMove(): Promise<Move | "give up"> {

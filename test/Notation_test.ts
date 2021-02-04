@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.85.0/testing/asserts.ts";
+import { assert, assertEquals, assertNotEquals } from "https://deno.land/std@0.85.0/testing/asserts.ts";
 import { Board } from "../Board.ts";
 import { Color } from "../Game.ts";
 import { Piece } from "../pieces/ChessPiece.ts";
@@ -48,8 +48,16 @@ Deno.test("invalid move (white): 'bf4' is not a valid move", () => {
 });
 
 Deno.test("valid move (white): 'Bf4' should move Bishop to F4", () => {
-  const game = createBoardWithPieces();  
+  const game = createBoardWithPieces();
   game.pieces.white.find(p => p.position()?.equals(Position.create("D2")))?.move(Position.create("D4")); // Clear way for bishop to move to F4
   const move = Notation.parseMove("Bf4", game.pieces.white);
   assertMoveEquals(move, Piece.Bishop, Position.create("C1"), Position.create("F4"));
-})
+});
+
+Deno.test("valid move (white): pawn to D4 should be 'd4'", () => {
+  const game = createBoardWithPieces();
+  const pawn = game.pieces.white.find(p => p.position()?.equals(Position.create("D2")));
+  assert(pawn);
+  const move = Notation.toAlgebraicNotation(pawn, Position.create("D4"), game.pieces.white);
+  assertEquals(move, "d4");
+});

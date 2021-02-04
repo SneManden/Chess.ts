@@ -5,10 +5,8 @@ import { Move } from "./Player.ts";
 import { RandomPlayer } from "./RandomPlayer.ts";
 
 export class GreedyPlayer extends RandomPlayer {
-  constructor(
-    id: string
-  ) {
-    super(id);
+  constructor(name: string) {
+    super(name);
   }
 
   makeMove(): Promise<Move | "give up"> {
@@ -32,7 +30,7 @@ export class GreedyPlayer extends RandomPlayer {
       -
       this.importance(this.board?.lookAt(b.attackMoves[0]) ?? null)
     )[0];
-    return { piece: bestAttackPiece.piece, to: bestAttackPiece.attackMoves[0] };
+    return this.createMove(bestAttackPiece.piece, bestAttackPiece.attackMoves[0]);
   }
 
   private attackingMoves(piece: ChessPiece): Position[] {

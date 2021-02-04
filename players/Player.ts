@@ -3,10 +3,12 @@ import { ChessPiece } from "../pieces/ChessPiece.ts";
 import { Color, Square } from "../Game.ts";
 import { Position } from "../Position.ts";
 import { notNullish, uuidv4 } from "../utility.ts";
+import { Notation } from "../Notation.ts";
 
 export interface Move {
-  piece: ChessPiece,
-  to: Position,
+  notation: string;
+  piece: ChessPiece;
+  to: Position;
 }
 
 export abstract class Player {
@@ -35,6 +37,14 @@ export abstract class Player {
   }
 
   abstract makeMove(): Promise<Move | "give up">;
+
+  protected createMove(piece: ChessPiece, to: Position): Move {
+    return {
+      piece,
+      to,
+      notation: Notation.toAlgebraicNotation(piece, to, this.availablePieces),
+    }
+  }
 
   protected isOpponent(other: Square): boolean {
     return notNullish(other) && other.color !== Color.Undefined && other.color !== this.color;

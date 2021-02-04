@@ -35,7 +35,26 @@ export class Notation {
       this.DEBUG && console.warn("No piece among candidates", candidates.map(c => c.toString()), "at", departureCol, departureRow, "found");
       return null;
     }
-    return { piece, to: toPosition };
+    return { piece, to: toPosition, notation: move };
+  }
+
+  static toAlgebraicNotation(piece: ChessPiece, to: Position, team: ChessPiece[]): string {
+    const piecePosition = piece.position();
+    if (!piecePosition) {
+      throw new Error("Piece must be on the board!");
+    }
+    
+    const otherPieces = team.filter(p => p !== piece).filter(p => p.isOnBoard).filter(p => p.piece === piece.piece);
+    const disambiguation = otherPieces.filter(p => p.validMoves().some(pos => pos.equals(to)));
+    if (disambiguation.length === 0) {
+      return `${piece.notation}${to.toString().toLowerCase()}`;
+    }
+    const disambiguationCol = disambiguation.filter(p => p.position()?.col === piecePosition.col);
+    if (disambiguationCol.length === 0) {
+      return `${piece.notation}${piecePosition.col.toLocaleLowerCase()}${to.toString().toLowerCase()}`;
+    } else {
+      return `${piece.notation}${piecePosition.col.toLocaleLowerCase()}${piecePosition.row}${to.toString().toLowerCase()}`;
+    }
   }
 
   private static getPiece(pieces: ChessPiece[], depCol?: Col, depRow?: Row): ChessPiece | null {

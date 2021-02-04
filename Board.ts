@@ -11,6 +11,8 @@ import * as Colors from "https://deno.land/std/fmt/colors.ts";
 
 export type BoardDict = { [R in Row]: { [C in Col]: Square } };
 
+export type KingStatus = "none" | "check" | "checkmate" | "stalemate";
+
 export interface DrawOptions {
   labels?: boolean;
   offBoardPieces?: boolean;
@@ -78,10 +80,11 @@ export class Board {
       throw new Error("Cannot check for invalid move for piece not on board");
     }
     const replaced = this.replace(piece, to);
-    const kingIsCheck = this.isKingCheck(piece.color);
+    const kingIsFine = this.kingStatus(piece.color) === "none";
 
     this.undoMove(piece, to, replaced, originalPosition);
-    return !kingIsCheck;
+
+    return kingIsFine;
   }
 
   private undoMove(piece: ChessPiece, move: Position, moveSquare: Square, originalPosition: Position): void {
@@ -91,19 +94,31 @@ export class Board {
     }
   }
 
-  isKingCheck(color: Color): boolean {
+  kingStatus(color: Color): KingStatus {
     const team = color === Color.White ? this.white : this.black;
     const king = team.find(piece => piece.piece === Piece.King);
     if (!king) {
       this.DEBUG && console.warn(`Cannot check for move validity: the board is without a ${Color[color]} king!`);
-      return false;
+      return "none";
     }
     const kingPosition = this.getPosition(king);
     if (!kingPosition) {
       this.DEBUG && console.warn(`Cannot check for move validity: the king is not positioned on the board!`);
-      return false;
+      return "none";
     }
-    return this.underAttack(kingPosition, color);
+    
+    if (!this.underAttack(kingPosition, color)) {
+      return "none";
+    }
+
+    const anyPieceHasValidMoves = team.filter(p => p.isOnBoard).some(p => p.validMoves(true).length > 0);
+    if (anyPieceHasValidMoves) {
+      return "check";
+    }
+
+    // TODO: stalemate?
+
+    return "checkmate";
   }
 
   // Inspiration from https://www.daniweb.com/programming/software-development/code/423640/unicode-chessboard-in-a-terminal

@@ -14,12 +14,20 @@ export type Square = ChessPiece | Empty;
 export interface GameOptions {
   delay: number | null;
   maxRounds: number;
+  drawBoard: boolean;
+}
+
+export interface GameResults {
+  roundsPlayed: number;
+  winner: Player | "draw";
+  moves: string[];
 }
 
 export class Game {
   readonly DEFAULT_GAME_OPTIONS: GameOptions = {
     delay: 1_000,
     maxRounds: 100,
+    drawBoard: true,
   };
   
   private board = new Board();
@@ -43,18 +51,24 @@ export class Game {
     p2.initialize(Color.Black, this.board, black);
 
     this.nextTurn = p1;
-
-    console.log(this.board.drawLargeBoardString());
   }
 
-  async startGame(options?: Partial<GameOptions>): Promise<void> {
+  async startGame(options?: Partial<GameOptions>): Promise<GameResults> {
     if (!this.playerWhite || !this.playerBlack) {
       throw new Error("Game needs players!");
     }
 
     const opt: GameOptions = { ...this.DEFAULT_GAME_OPTIONS, ...options };
+
+    let winner: Player | null = null;
+    const moves: string[] = [];
+
+    if (opt.drawBoard) {
+      console.log(this.board.drawLargeBoardString());
+    }
     
-    for (let round = 1; round <= opt.maxRounds; round++) {
+    let round = 1;
+    for (; round <= opt.maxRounds; round++) {
       const activePlayer = this.nextTurn;
       if (!activePlayer) {
         break;
@@ -64,15 +78,26 @@ export class Game {
       const other = activePlayer === this.playerWhite ? this.playerBlack : this.playerWhite;
 
       const move = await activePlayer.makeMove();
+      moves.push(move === "give up" ? "resign" : move.notation);
       if (move === "give up") {
-        console.log(activePlayer.name, "has given up.", other.name, "wins");
+        console.log(activePlayer.name, "has given up.");
+        winner = other;
         break;
       }
       
       const replacement = move.piece.move(move.to);
-      console.log(move.piece.name, "to", move.to.toString(), ...(replacement ? ["takes", replacement.name]:[]));
 
-      console.log(this.board.drawLargeBoardString());
+      const kingCheck = this.board.kingStatus(other.color);
+      console.log(move.piece.name, "to", move.to.toString(), ...(replacement ? ["takes", replacement.name]:[]), ...(kingCheck !== "none" ? ["...", kingCheck]:[]));
+
+      if (opt.drawBoard) {
+        console.log(this.board.drawLargeBoardString());
+      }
+
+      if (kingCheck === "checkmate") {
+        winner = activePlayer;
+        break;
+      }
 
       this.nextTurn = other;
       console.groupEnd();
@@ -82,6 +107,18 @@ export class Game {
     }
     console.groupEnd();
 
-    console.log("Game ended");
+    if (winner) {
+      console.log("Winner:", winner.name);
+    } else {
+      console.log("The game was a draw.");
+    }
+
+    console.log("Game over.");
+
+    return {
+      roundsPlayed: round,
+      winner: winner ?? "draw",
+      moves,
+    };
   }
 }
