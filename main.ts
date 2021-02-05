@@ -12,11 +12,14 @@ const p1 = new RandomPlayer("RandomPlayer2");
 const hasHuman = p1.name.startsWith("Human");
 const options: GameOptions = {
   delay: hasHuman ? 1_000 : null,
-  drawBoard: hasHuman,
+  drawBoard: hasHuman ? true : "final",
   maxRounds: 200,
 };
 
+
 game.setupNewGame(p1, p2);
+
+// game.playSequence([]);
 
 const results = await game.startGame(options);
 

@@ -2,6 +2,7 @@ import { Board } from "./Board.ts";
 import { ChessPiece } from "./pieces/ChessPiece.ts";
 import { Player } from "./players/Player.ts";
 import { delay } from 'https://deno.land/x/delay@v0.2.0/mod.ts';
+import { Notation } from "./Notation.ts";
 
 export enum Color { Undefined = 0, White, Black }
 
@@ -14,7 +15,7 @@ export type Square = ChessPiece | Empty;
 export interface GameOptions {
   delay: number | null;
   maxRounds: number;
-  drawBoard: boolean;
+  drawBoard: boolean | "final";
 }
 
 export interface GameResults {
@@ -63,7 +64,7 @@ export class Game {
     let winner: Player | null = null;
     const moves: string[] = [];
 
-    if (opt.drawBoard) {
+    if (opt.drawBoard === true) {
       console.log(this.board.drawLargeBoardString());
     }
     
@@ -90,13 +91,15 @@ export class Game {
       const kingCheck = this.board.kingStatus(other.color);
       console.log(move.piece.name, "to", move.to.toString(), ...(replacement ? ["takes", replacement.name]:[]), ...(kingCheck !== "none" ? ["...", kingCheck]:[]));
 
-      if (opt.drawBoard) {
+      if (opt.drawBoard === true) {
         console.log(this.board.drawLargeBoardString());
       }
 
       if (kingCheck === "checkmate") {
         winner = activePlayer;
         break;
+      } else if (kingCheck === "stalemate") {
+        break; // draw
       }
 
       this.nextTurn = other;
@@ -115,10 +118,28 @@ export class Game {
 
     console.log("Game over.");
 
+    if (opt.drawBoard === "final") {
+      console.log(this.board.drawLargeBoardString());
+    }
+
     return {
       roundsPlayed: round,
       winner: winner ?? "draw",
       moves,
     };
+  }
+
+  playSequence(moves: string[]): void {
+    if (!this.playerWhite || !this.playerBlack) {
+      throw new Error("Game needs players!");
+    }
+    for (let i = 0; i < moves.length; i++) {
+      const moveString = moves[i];
+      const activePlayer = i % 2 === 0 ? this.playerWhite : this.playerBlack;
+      const otherPlayer = i % 2 === 0 ? this.playerBlack : this.playerWhite;
+      const move = Notation.parseMove(moveString, activePlayer.availablePieces);
+      move?.piece.move(move.to);
+      this.nextTurn = otherPlayer;
+    }
   }
 }

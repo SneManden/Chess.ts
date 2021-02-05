@@ -56,6 +56,12 @@ export class Position<C extends Col = Col, R extends Row = Row> {
   }
 
   static create<C extends Col = Col, R extends Row = Row>(str: `${C}${R}`): Position<C, R> {
+    if (!Position.cols.includes(str[0] as C)) {
+      throw new Error(`Cannot create position at invalid column '${str[0]}'`);
+    }
+    if (!Position.rows.includes(parseInt(str[1]) as R)) {
+      throw new Error(`Cannot create position at invalid row '${str[1]}'`);
+    }
     return new Position(str[0] as C, parseInt(str[1]) as R);
   }
   static get rows(): Row[] {

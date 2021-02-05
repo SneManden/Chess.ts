@@ -1,4 +1,4 @@
-import { ChessPiece, Piece } from "./pieces/ChessPiece.ts";
+import { ChessPiece, Piece, PieceNotation } from "./pieces/ChessPiece.ts";
 import { Color, HomeRank, PawnRank, Square } from "./Game.ts";
 import { Row, Col, Position } from "./Position.ts";
 import { Pawn } from "./pieces/Pawn.ts";
@@ -8,6 +8,7 @@ import { Knight } from "./pieces/Knight.ts";
 import { Queen } from "./pieces/Queen.ts";
 import { Rook } from "./pieces/Rook.ts";
 import * as Colors from "https://deno.land/std/fmt/colors.ts";
+import { PiecePosition } from "./Notation.ts";
 
 export type BoardDict = { [R in Row]: { [C in Col]: Square } };
 
@@ -80,7 +81,7 @@ export class Board {
       throw new Error("Cannot check for invalid move for piece not on board");
     }
     const replaced = this.replace(piece, to);
-    const kingIsFine = this.kingStatus(piece.color) === "none";
+    const kingIsFine = this.kingStatus(piece.color, true) === "none";
 
     this.undoMove(piece, to, replaced, originalPosition);
 
@@ -94,7 +95,7 @@ export class Board {
     }
   }
 
-  kingStatus(color: Color): KingStatus {
+  kingStatus(color: Color, skipValidityCheck = false): KingStatus {
     const team = color === Color.White ? this.white : this.black;
     const king = team.find(piece => piece.piece === Piece.King);
     if (!king) {
@@ -107,18 +108,13 @@ export class Board {
       return "none";
     }
     
-    if (!this.underAttack(kingPosition, color)) {
-      return "none";
-    }
+    const kingIsUnderAttack = this.underAttack(kingPosition, color);
+    const anyPieceHasValidMoves = team.filter(p => p.isOnBoard).some(p => p.validMoves(skipValidityCheck).length > 0);
 
-    const anyPieceHasValidMoves = team.filter(p => p.isOnBoard).some(p => p.validMoves(true).length > 0);
     if (anyPieceHasValidMoves) {
-      return "check";
+      return kingIsUnderAttack ? "check" : "none";
     }
-
-    // TODO: stalemate?
-
-    return "checkmate";
+    return kingIsUnderAttack ? "checkmate" : "stalemate";
   }
 
   // Inspiration from https://www.daniweb.com/programming/software-development/code/423640/unicode-chessboard-in-a-terminal
@@ -205,6 +201,47 @@ export class Board {
       // Pawn Rank:
       ...pawns
     ];
+  }
+
+  /**
+   * 
+   * @param pieces List of pieces using Algebraic Notation
+   * 
+   * Example:
+   * `setupBoard({ white: ["Rf1", "Kg1", "f2", "g2"], black: ["Ke8", "Rh5", "Qh1"] })`
+   */
+  setupBoard({ white, black }: { white: PiecePosition[], black: PiecePosition[] }): { white: ChessPiece[], black: ChessPiece[] } {
+    const notationToChessPiece = (notation: PiecePosition, color: Color): ChessPiece => {
+      const match = /^(|R|N|B|Q|K)([a-h])([1-8])$/.exec(notation);
+      if (!match) {
+        throw new Error(`Failed to parse piece position ${notation}`);
+      }
+      const [_, type, col, row] = match;
+      const piece = this.createPiece(type as PieceNotation, color);
+      this.add(piece, new Position(col.toUpperCase() as Col, parseInt(row) as Row));
+      return piece;
+    };
+    return {
+      white: white.map(n => notationToChessPiece(n, Color.White)),
+      black: black.map(n => notationToChessPiece(n, Color.Black)),
+    };
+  }
+
+  private createPiece(notation: PieceNotation, color: Color): ChessPiece {
+    switch (notation) {
+      case "":
+        return new Pawn(this, color, null);
+      case "R":
+        return new Rook(this, color, null);
+      case "N":
+        return new Knight(this, color, null);
+      case "B":
+        return new Bishop(this, color, null);
+      case "Q":
+        return new Queen(this, color, null);
+      case "K":
+        return new King(this, color, null);
+    }
   }
 
   get whiteOnBoard(): ChessPiece[] {

@@ -1,6 +1,9 @@
-import { ChessPiece } from "./pieces/ChessPiece.ts";
+import { ChessPiece, PieceNotation } from "./pieces/ChessPiece.ts";
 import { Move } from "./players/Player.ts";
 import { Col, Position, Row } from "./Position.ts";
+
+export type PiecePosition = `${PieceNotation}${Lowercase<Col>}${Row}`;
+// export type MoveNotation = `${PieceNotation}${Lowercase<Col | "">}${Row | ""}${"x" | ""}${Lowercase<Col>}${Row}`;
 
 export class Notation {
   private static DEBUG = false;

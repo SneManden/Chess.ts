@@ -31,3 +31,17 @@ Deno.test("check validity should not alter board", () => {
   assertEquals(board.lookAt(movePos), null, "there should be nothing at D4");
   assertEquals(isValid, true, "move should be valid");
 });
+
+Deno.test("checkmate by queen and rook", () => {
+  const board = new Board();
+  board.setupBoard({ white: ["Rf1", "Kg1", "f2", "g2"], black: ["Ke8", "Rh5", "Qh1"] });
+  const status = board.kingStatus(Color.White);
+  assertEquals(status, "checkmate");
+});
+
+Deno.test("stalemate", () => {
+  const board = new Board();
+  board.setupBoard({ white: ["Ke3", "Qd5", "Be5"], black: ["Kc8"] });
+  const status = board.kingStatus(Color.Black);
+  assertEquals(status, "stalemate");
+});
