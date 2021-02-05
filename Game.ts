@@ -81,7 +81,7 @@ export class Game {
       const move = await activePlayer.makeMove();
       moves.push(move === "give up" ? "resign" : move.notation);
       if (move === "give up") {
-        console.log(activePlayer.name, "has given up.");
+        console.log("Resign");
         winner = other;
         break;
       }
