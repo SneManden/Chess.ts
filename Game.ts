@@ -79,8 +79,8 @@ export class Game {
       const other = activePlayer === this.playerWhite ? this.playerBlack : this.playerWhite;
 
       const move = await activePlayer.makeMove();
-      moves.push(move === "give up" ? "resign" : move.notation);
-      if (move === "give up") {
+      moves.push(move === "resign" ? "resign" : move.notation);
+      if (move === "resign") {
         console.log("Resign");
         winner = other;
         break;

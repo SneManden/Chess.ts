@@ -1,18 +1,17 @@
 
-import { Notation } from "../Notation.ts";
 import { ChessPiece } from "../pieces/ChessPiece.ts";
 import { Position } from "../Position.ts";
-import { Move, Player } from "./Player.ts";
+import { Action, Move, Player } from "./Player.ts";
 
 export class RandomPlayer extends Player {
   constructor(name: string) {
     super(name);
   }
 
-  makeMove(): Promise<Move | "give up"> {
+  makeMove(): Promise<Action> {
     const randomPiece = this.getRandomPiece({ mustHaveMoves: true });
     if (!randomPiece) {
-      return Promise.resolve("give up");
+      return Promise.resolve("resign");
     }
     const randomMove = this.getRandomMove(randomPiece);
     return Promise.resolve(this.createMove(randomPiece, randomMove));

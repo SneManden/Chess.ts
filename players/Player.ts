@@ -11,6 +11,8 @@ export interface Move {
   to: Position;
 }
 
+export type Action = Move | "resign";
+
 export abstract class Player {
   readonly id = uuidv4();
   
@@ -36,7 +38,7 @@ export abstract class Player {
     return this.pieces.filter(p => p.isOnBoard);
   }
 
-  abstract makeMove(): Promise<Move | "give up">;
+  abstract makeMove(): Promise<Action>;
 
   protected createMove(piece: ChessPiece, to: Position): Move {
     return {

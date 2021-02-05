@@ -1,15 +1,13 @@
 import { Notation } from "../Notation.ts";
-import { Move, Player } from "./Player.ts";
+import { Action, Move, Player } from "./Player.ts";
 
 export class HumanPlayer extends Player {
-  private giveUpStrings = ["quit", "exit", "give up"];
+  private giveUpStrings = ["resign"];
 
   readonly helpString = `
     Commands:
       help      prints this help
-      exit      exit game
-      quit      exit game
-      give up   exit game
+      resign    resign and exit game
 
     Make a move:
       <piece><departing col?><departing row?><capture?><to>
@@ -40,7 +38,7 @@ export class HumanPlayer extends Player {
     super(name);
   }
 
-  async makeMove(): Promise<Move | "give up"> {
+  async makeMove(): Promise<Action> {
     let move: Move | null = null;
     while (!move) {
       console.log("What's your move? ");
@@ -49,7 +47,7 @@ export class HumanPlayer extends Player {
         continue;
       }
       if (this.giveUpStrings.includes(input?.toLowerCase())) {
-        return "give up";
+        return "resign";
       }
       if (input.toLowerCase() === "help") {
         console.log(this.helpString);

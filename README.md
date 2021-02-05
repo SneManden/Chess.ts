@@ -24,9 +24,7 @@ Here's the help text for the game:
 
     Commands:
       help      prints this help
-      exit      exit game
-      quit      exit game
-      give up   exit game
+      resign    resign and exit game
 
     Make a move:
       <piece><departing col?><departing row?><capture?><to>

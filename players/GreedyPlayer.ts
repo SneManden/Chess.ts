@@ -1,7 +1,7 @@
 import { ChessPiece } from "../pieces/ChessPiece.ts";
 import { Piece } from "../pieces/ChessPiece.ts";
 import { Position } from "../Position.ts";
-import { Move } from "./Player.ts";
+import { Action, Move } from "./Player.ts";
 import { RandomPlayer } from "./RandomPlayer.ts";
 
 export class GreedyPlayer extends RandomPlayer {
@@ -9,7 +9,7 @@ export class GreedyPlayer extends RandomPlayer {
     super(name);
   }
 
-  makeMove(): Promise<Move | "give up"> {
+  makeMove(): Promise<Action> {
     const bestAttackMove = this.getBestAttackingMove();
     if (bestAttackMove) {
       return Promise.resolve(bestAttackMove);
