@@ -26,8 +26,10 @@ Here's the help text for the game:
       help      prints this help
       resign    resign and exit game
 
-    Make a move:
-      <piece><departing col?><departing row?><capture?><to>
+    Make a move (one of):
+      <piece><departing col?><departing row?><capture?><to><promotion?>
+      0-0
+      0-0-0
 
     Notation:
       (none)    pawn
@@ -39,16 +41,22 @@ Here's the help text for the game:
       x         capture (optional)
       a-h       column/file
       1-8       row/rank
+      =<piece>  promotion to piece
       
-      examples (simple moves):
-        Qd4     Queen to D4
-        d3      Pawn to D3
-      examples (captures):
-        Bxe5    Bishop captures piece on E5
-      examples (disambiguation):
-        Rdf8    Rook of column D to F8 (if the other rook can also move to F8)
-        R1a3    Rook of row 1 to A3 (if the other rook can also move to A3)
-        Qh4e1   Queen at H4 to E1 (if other (promoted) queens can also move to E1)
+    Examples (simple moves):
+      Qd4     Queen to D4
+      d3      Pawn to D3
+    Example  (captures):
+      Bxe5    Bishop captures piece on E5
+    Examples (disambiguation):
+      Rdf8    Rook of column D to F8 (if the other rook can also move to F8)
+      R1a3    Rook of row 1 to A3 (if the other rook can also move to A3)
+      Qh4e1   Queen at H4 to E1 (if other (promoted) queens can also move to E1)
+    Example  (promotion):
+      d8=Q    Pawn to D8 with promotion to Queen
+    Examples (castling):
+      0-0     King castling with kingside rook (short)
+      0-0-0   King castling with queenside rook (long)
 
 ## Tests
 I have made a bunch of tests. Run them by
@@ -61,9 +69,10 @@ I have made a bunch of tests. Run them by
 * [x] Implement move "Promotion" (when a pawn reaches back rank => exchange with choice of queen, rook, bishop, or knight)
 * [ ] Implement "en passant" (case where pawn is taken by another pawn after an initially long move)
 * [x] Check (basic) move validity (own king must not be check by move)
-* [ ] Advanced chess rules (see rules about draws, stalemate, etc.)
+* [x] Some advanced chess rules (see rules about draws, stalemate, etc.)
+* [ ] Advanced Draw detection (e.g. dead positions)
 * [x] Check(mate) stuff
-* [ ] Fix possible bug in check(mate) stuff
+* [x] Fix possible bug in check(mate) stuff
 * [x] Show taken pieces
 * [x] Redo Position constructor to take arguments as (col, row) instead of (row, col)
 * [x] Allow for human to play
@@ -72,4 +81,4 @@ I have made a bunch of tests. Run them by
 * [ ] Even better graphics
 * [ ] Much more
 * [ ] Play with a stop watch
-* [ ] Reply match from moves list
+* [x] Reply match from moves list

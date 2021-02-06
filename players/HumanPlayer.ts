@@ -9,8 +9,10 @@ export class HumanPlayer extends Player {
       help      prints this help
       resign    resign and exit game
 
-    Make a move:
-      <piece><departing col?><departing row?><capture?><to>
+    Make a move (one of):
+      <piece><departing col?><departing row?><capture?><to><promotion?>
+      0-0
+      0-0-0
 
     Notation:
       (none)    pawn
@@ -22,16 +24,22 @@ export class HumanPlayer extends Player {
       x         capture (optional)
       a-h       column/file
       1-8       row/rank
+      =<piece>  promotion to piece
       
-      examples (simple moves):
-        Qd4     Queen to D4
-        d3      Pawn to D3
-      examples (captures):
-        Bxe5    Bishop captures piece on E5
-      examples (disambiguation):
-        Rdf8    Rook of column D to F8 (if the other rook can also move to F8)
-        R1a3    Rook of row 1 to A3 (if the other rook can also move to A3)
-        Qh4e1   Queen at H4 to E1 (if other (promoted) queens can also move to E1)
+    Examples (simple moves):
+      Qd4     Queen to D4
+      d3      Pawn to D3
+    Example  (captures):
+      Bxe5    Bishop captures piece on E5
+    Examples (disambiguation):
+      Rdf8    Rook of column D to F8 (if the other rook can also move to F8)
+      R1a3    Rook of row 1 to A3 (if the other rook can also move to A3)
+      Qh4e1   Queen at H4 to E1 (if other (promoted) queens can also move to E1)
+    Example  (promotion):
+      d8=Q    Pawn to D8 with promotion to Queen
+    Examples (castling):
+      0-0     King castling with kingside rook (short)
+      0-0-0   King castling with queenside rook (long)
   `;
 
   constructor(name: string) {
