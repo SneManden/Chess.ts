@@ -18,14 +18,14 @@ Deno.test("check validity should not alter board", () => {
   board.createPieces(Color.White, 1, 2);
   board.createPieces(Color.Black, 8, 7);
   const pawnPos = Position.create("D2");
-  const movePos = Position.create("E4");
+  const movePos = Position.create("D4");
   const pawn = board.lookAt(pawnPos); // some pawn
   // Assumption
   assert(pawn !== null, "there must be a pawn at D2");
 
   // Act
-  const isValid = board.isValidMove(pawn, { to: movePos });
-  
+  const isValid = board.isValidMove(pawn, { to: movePos, from: pawnPos });
+
   // Assert
   assertEquals(board.getPosition(pawn)?.toString(), pawnPos.toString(), "pawn must still be at D2");
   assertEquals(board.lookAt(movePos), null, "there should be nothing at D4");

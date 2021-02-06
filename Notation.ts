@@ -62,18 +62,20 @@ export class Notation {
       }
       return { piece, move: promotionMove, notation: move };
     }
-    return { piece, move: { to: toPosition }, notation: move };
+    return { piece, move: { to: toPosition, from: piece.position() }, notation: move };
   }
 
   static toAlgebraicNotation(piece: ChessPiece, move: PieceMove, team: ChessPiece[]): string {
-    const piecePosition = piece.position();
+    const piecePosition = piece.positionSafe();
     if (!piecePosition) {
       throw new Error("Piece must be on the board!");
     }
 
+    const moveTo = move.to.toString().toLowerCase();
+
     if (isPromotion(move)) {
       const promotion = pieceToNotation(move.piece);
-      return `${move.to.toString()}=${promotion}`;
+      return `${moveTo}=${promotion}`;
     } else if (isCastling(move)) {
       return move.type === "short" ? "0-0" : "0-0-0";
     }
@@ -84,13 +86,13 @@ export class Notation {
       .filter(p => p.piece === piece.piece);
     const disambiguation = otherPieces.filter(p => p.validMoves().some(pos => pos.to.equals(move.to)));
     if (disambiguation.length === 0) {
-      return `${piece.notation}${move.to.toString().toLowerCase()}`;
+      return `${piece.notation}${moveTo}`;
     }
-    const disambiguationCol = disambiguation.filter(p => p.position()?.col === piecePosition.col);
+    const disambiguationCol = disambiguation.filter(p => p.positionSafe()?.col === piecePosition.col);
     if (disambiguationCol.length === 0) {
-      return `${piece.notation}${piecePosition.col.toLocaleLowerCase()}${move.to.toString().toLowerCase()}`;
+      return `${piece.notation}${piecePosition.col.toLocaleLowerCase()}${moveTo}`;
     } else {
-      return `${piece.notation}${piecePosition.col.toLocaleLowerCase()}${piecePosition.row}${move.to.toString().toLowerCase()}`;
+      return `${piece.notation}${piecePosition.col.toLocaleLowerCase()}${piecePosition.row}${moveTo}`;
     }
   }
 
@@ -98,11 +100,11 @@ export class Notation {
     this.DEBUG && console.log("getPiece(pieces:", pieces.map(p => p.toString()), ", depCol:", depCol, ", depRow:", depRow, ")");
     let candidates: ChessPiece[];
     if (depCol && depRow) {
-      candidates = pieces.filter(p => p.position() === new Position(depCol, depRow));
+      candidates = pieces.filter(p => p.positionSafe() === new Position(depCol, depRow));
     } else if (depCol) {
-      candidates = pieces.filter(p => p.position()?.col === depCol);
+      candidates = pieces.filter(p => p.positionSafe()?.col === depCol);
     } else if (depRow) {
-      candidates = pieces.filter(p => p.position()?.row === depRow);
+      candidates = pieces.filter(p => p.positionSafe()?.row === depRow);
     } else if (pieces.length === 1) {
       return pieces[0];
     } else {

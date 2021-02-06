@@ -12,7 +12,7 @@ export class Bishop<C extends Color> extends ChessPiece {
   }
 
   protected moves(): Position[] {
-    const pos = this.position();
+    const pos = this.positionSafe();
     if (!pos) {
       return [];
     }

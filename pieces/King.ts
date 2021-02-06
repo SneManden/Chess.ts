@@ -12,7 +12,7 @@ export class King<C extends Color> extends ChessPiece {
   }
 
   protected moves(): Position[] {
-    const pos = this.position();
+    const pos = this.positionSafe();
     if (!pos) {
       return [];
     }
@@ -50,7 +50,7 @@ export class King<C extends Color> extends ChessPiece {
     if (!this.validCastlingMove(kingMoveSequence)) {
       return null;
     }
-    return { to: kingMove, special: "Castling", rook, type };
+    return { to: kingMove, from: this.position(), special: "Castling", rook, type };
   }
 
   private validCastlingMove(sequence: Position[]): boolean {
@@ -65,6 +65,6 @@ export class King<C extends Color> extends ChessPiece {
 
   private rook(col: Extract<Col, "A" | "H">): ChessPiece | null {
     const desired = new Position(col, this.color === Color.White ? 1 : 8);
-    return this.board.getRooks(this.color).find(r => r.position()?.equals(desired)) ?? null;
+    return this.board.getRooks(this.color).find(r => r.positionSafe()?.equals(desired)) ?? null;
   }
 }

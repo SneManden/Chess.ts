@@ -67,7 +67,7 @@ I have made a bunch of tests. Run them by
 * [x] Fix pristine
 * [x] Implement move "Castling"
 * [x] Implement move "Promotion" (when a pawn reaches back rank => exchange with choice of queen, rook, bishop, or knight)
-* [ ] Implement "en passant" (case where pawn is taken by another pawn after an initially long move)
+* [x] Implement "en passant" (case where pawn is taken by another pawn after an initially long move)
 * [x] Check (basic) move validity (own king must not be check by move)
 * [x] Some advanced chess rules (see rules about draws, stalemate, etc.)
 * [ ] Advanced Draw detection (e.g. dead positions)

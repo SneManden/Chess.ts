@@ -8,7 +8,8 @@ import { Knight } from "./pieces/Knight.ts";
 import { Queen } from "./pieces/Queen.ts";
 import { Rook } from "./pieces/Rook.ts";
 import * as Colors from "https://deno.land/std/fmt/colors.ts";
-import { PiecePosition } from "./Notation.ts";
+import { Notation, PiecePosition } from "./Notation.ts";
+import { Move } from "./players/Player.ts";
 
 export type BoardDict = { [R in Row]: { [C in Col]: Square } };
 
@@ -31,6 +32,8 @@ export class Board {
   private white: ChessPiece[] = [];
   private black: ChessPiece[] = [];
 
+  private moves: Move[] = [];
+
   constructor() {
   }
 
@@ -48,13 +51,18 @@ export class Board {
 
   applyMove(piece: ChessPiece, move: PieceMove): Square {
     const replacement = piece.move(move.to);
+    this.moves.push({
+      piece,
+      move,
+      notation: Notation.toAlgebraicNotation(piece, move, piece.color === Color.White ? this.white :this.black)
+    });
 
     if (isPromotion(move)) {
       const promotion = this.createPiece(move.piece, piece.color); // Create promoted piece
       this.updatePosition(piece, null); // remove the pawn
       this.add(promotion, move.to); // add instead the promoted piece to the board
     } else if (isCastling(move)) {
-      const rookPosition = move.rook.position();
+      const rookPosition = move.rook.positionSafe();
       if (!rookPosition) {
         throw new Error("Cannot castle with rook outside the board!");
       }
@@ -142,6 +150,10 @@ export class Board {
       return kingIsUnderAttack ? "check" : "none";
     }
     return kingIsUnderAttack ? "checkmate" : "stalemate";
+  }
+
+  get lastMove(): Move | null {
+    return this.moves.last() ?? null;
   }
 
   // Inspiration from https://www.daniweb.com/programming/software-development/code/423640/unicode-chessboard-in-a-terminal

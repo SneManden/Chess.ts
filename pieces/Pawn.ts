@@ -3,6 +3,7 @@ import { ChessPiece, Piece, PieceMove, PromotionMove } from "../pieces/ChessPiec
 import { Color, PawnRank } from "../Game.ts";
 import { Col, Position, Row } from "../Position.ts";
 import { notNullish } from "../utility.ts";
+import { Move } from "../players/Player.ts";
 
 export class Pawn<C extends Color> extends ChessPiece {
   readonly notation = "";
@@ -12,7 +13,7 @@ export class Pawn<C extends Color> extends ChessPiece {
   }
 
   protected moves(): Position[] {
-    const pos = this.position();
+    const pos = this.positionSafe();
     if (!pos) {
       return [];
     }
@@ -22,16 +23,18 @@ export class Pawn<C extends Color> extends ChessPiece {
       ...this.range((pos: Position) => pos.forward(this.color), this.pristine ? 2 : 1),
     ].filter(notNullish).filter(pos => !this.board.lookAt(pos));
     
-    // Pawn only attacks in the immediate forward diagonals
-    const attackMoves = [
-      pos.forward(this.color)?.left(),
-      pos.forward(this.color)?.right(),
-    ].filter(notNullish).filter(pos => this.isOpponent(this.board.lookAt(pos)));
-    
     return [
       ...basicMoves,
-      ...attackMoves,
-    ];
+      ...this.attackMoves(),
+    ].filter(pos => pos.row !== this.opponentEnemyRank); // do not include promotion moves here
+  }
+  
+  private attackMoves(): Position[] {
+    // Pawn only attacks in the immediate forward diagonals
+    return [
+      this.position().forward(this.color)?.left(),
+      this.position().forward(this.color)?.right(),
+    ].filter(notNullish).filter(pos => this.isOpponent(this.board.lookAt(pos)));
   }
 
   protected specialMoves(): PieceMove[] {
@@ -42,19 +45,32 @@ export class Pawn<C extends Color> extends ChessPiece {
   }
 
   private promotionMoves(): PromotionMove[] {
-    const pos = this.position();
+    const pos = this.positionSafe();
     if (!pos) {
       return [];
     }
 
-    const forward = pos.forward(this.color);
-    if (forward?.row !== this.opponentEnemyRank) {
+    const movesToEnemyRank = [
+      pos.forward(this.color),
+      ...this.attackMoves()
+    ]
+    .filter(notNullish)
+    .filter(p => p.row === this.opponentEnemyRank);
+    
+    if (movesToEnemyRank.length === 0) {
       return [];
     }
 
-    return [Piece.Queen, Piece.Knight, Piece.Bishop, Piece.Rook].map(piece => (
-      { to: forward, special: "Promotion", piece }
-    ));
+    return movesToEnemyRank.reduce<PromotionMove[]>((allMoves, p) => {
+      allMoves.push(...this.promotionPieces.map<PromotionMove>(piece => ({
+        to: p, from: pos, special: "Promotion", piece
+      })));
+      return allMoves;
+    }, []);
+  }
+
+  private get promotionPieces(): Piece[] {
+    return [Piece.Queen, Piece.Knight, Piece.Bishop, Piece.Rook];
   }
 
   private get opponentEnemyRank(): Extract<Row, 1 | 8> {
@@ -62,17 +78,44 @@ export class Pawn<C extends Color> extends ChessPiece {
   }
 
   private enPassantMoves(): PieceMove[] {
-    const pos = this.position();
+    const pos = this.positionSafe();
     if (!pos) {
       return [];
     }
 
-    // TODO
-    return [];
+    const lastMove = this.board.lastMove;
+    if (!lastMove) {
+      return [];
+    }
+
+    const victimPawns = [pos.left(), pos.right()]
+      .filter(notNullish)
+      .map(p => this.board.lookAt(p))
+      .filter(notNullish)
+      .filter(p => p.piece === Piece.Pawn && this.isOpponent(p))
+      .filter(p => this.lastMoveWasPawnInitialDoubleForward(lastMove, p));
     
-    // return [
-    //   pos.forward(this.color)?.left(),
-    //   pos.forward(this.color)?.right(),
-    // ].filter(notNullish).filter(pos => this.isOpponent(this.board.lookAt(pos)));
+    return victimPawns.map(this.createEnPassantMove);
+  }
+
+  private createEnPassantMove(pawn: ChessPiece): PieceMove {
+    const moveTo = pawn.position().forward(this.color);
+    if (!moveTo) {
+      throw new Error("En passant move to position is null!");
+    }
+    return {
+      from: this.position(),
+      to: moveTo,
+      special: "En passant",
+    };
+  }
+
+  private lastMoveWasPawnInitialDoubleForward(lastMove: Move, pawn: ChessPiece): boolean {
+    if (lastMove.piece !== pawn) {
+      return false;
+    }
+
+    const doubleForward = Math.abs(lastMove.move.from.row - lastMove.move.to.row) === 2;
+    return doubleForward;
   }
 }

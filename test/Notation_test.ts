@@ -58,6 +58,6 @@ Deno.test("valid move (white): pawn to D4 should be 'd4'", () => {
   const game = createBoardWithPieces();
   const pawn = game.pieces.white.find(p => p.position()?.equals(Position.create("D2")));
   assert(pawn);
-  const move = Notation.toAlgebraicNotation(pawn, { to: Position.create("D4") }, game.pieces.white);
+  const move = Notation.toAlgebraicNotation(pawn, { to: Position.create("D4"), from: Position.create("D2") }, game.pieces.white);
   assertEquals(move, "d4");
 });

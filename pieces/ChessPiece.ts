@@ -18,6 +18,7 @@ export type SpecialMove = "Promotion" | `Castling` | "En passant";
 
 export interface PieceMove {
   to: Position;
+  from: Position;
   special?: SpecialMove;
 }
 
@@ -79,9 +80,9 @@ export abstract class ChessPiece {
     if (!this.isOnBoard) {
       return [];
     }
-    const basicMoves = this.moves().map<PieceMove>(to => ({ to }))
-      .filter(move => !this.isTeammate(this.board.lookAt(move.to)))
-      .filter(move => skipValidityCheck || this.board.isValidMove(this, move));
+    const basicMoves = this.moves()
+      .map<PieceMove>(to => ({ to, from: this.position() }))
+      .filter(move => !this.isTeammate(this.board.lookAt(move.to)));
 
     const specialMoves = this.specialMoves();
       
@@ -89,10 +90,11 @@ export abstract class ChessPiece {
       ...basicMoves,
       ...specialMoves,
     ]
+    .filter(move => skipValidityCheck || this.board.isValidMove(this, move));
   }
 
   get isOnBoard(): boolean {
-    return this.position() !== null;
+    return this.positionSafe() !== null;
   }
 
   move(to: Position): Square {
@@ -107,7 +109,7 @@ export abstract class ChessPiece {
   }
 
   toString(): string {
-    return `${this.name} @ ${this.position() ?? "not on board"}`;
+    return `${this.name} @ ${this.positionSafe() ?? "not on board"}`;
   }
 
   pieceIcon(ignoreColor = false): string {
@@ -122,12 +124,20 @@ export abstract class ChessPiece {
     }
   }
 
-  position(): Position | null {
+  positionSafe(): Position | null {
     return this.board.getPosition(this);
   }
 
+  position(): Position {
+    const position = this.positionSafe();
+    if (!position) {
+      throw new Error("Piece is off the board!");
+    }
+    return position;
+  }
+
   protected range(direction: (pos: Position) => Position | null, distance = 8): Position[] {
-    const pos = this.position();
+    const pos = this.positionSafe();
     if (!pos) {
       return [];
     }
