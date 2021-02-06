@@ -86,10 +86,11 @@ export class Game {
         break;
       }
       
-      const replacement = move.piece.move(move.to);
+      const replacement = this.board.applyMove(move.piece, move.move);
+      // const replacement = move.piece.move(move.move.to);
 
       const kingCheck = this.board.kingStatus(other.color);
-      console.log(move.piece.name, "to", move.to.toString(), ...(replacement ? ["takes", replacement.name]:[]), ...(kingCheck !== "none" ? ["...", kingCheck]:[]));
+      console.log(move.piece.name, "to", move.move.to.toString(), ...(replacement ? ["takes", replacement.name]:[]), ...(kingCheck !== "none" ? ["...", kingCheck]:[]));
 
       if (opt.drawBoard === true) {
         console.log(this.board.drawLargeBoardString());
@@ -138,7 +139,7 @@ export class Game {
       const activePlayer = i % 2 === 0 ? this.playerWhite : this.playerBlack;
       const otherPlayer = i % 2 === 0 ? this.playerBlack : this.playerWhite;
       const move = Notation.parseMove(moveString, activePlayer.availablePieces);
-      move?.piece.move(move.to);
+      move?.piece.move(move.move.to);
       this.nextTurn = otherPlayer;
     }
   }

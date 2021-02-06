@@ -1,4 +1,5 @@
-import { ChessPiece, PieceNotation } from "./pieces/ChessPiece.ts";
+import { Board } from "./Board.ts";
+import { ChessPiece, isCastling, isPromotion, Piece, PieceMove, PieceNotation, pieceToNotation } from "./pieces/ChessPiece.ts";
 import { Move } from "./players/Player.ts";
 import { Col, Position, Row } from "./Position.ts";
 
@@ -13,7 +14,22 @@ export class Notation {
       return null;
     }
 
-    const regex = /^(|R|N|B|Q|K)(|[a-h])(|[1-8])(|x)([a-h][1-8])$/;
+    if (move === "0-0" || move === "0-0-0") {
+      const type = move === "0-0" ? "short" : "long";
+      const king = availablePieces.find(p => p.piece === Piece.King);
+      const castlingMove = king?.validMoves().filter(isCastling).find(m => m.type === type);
+      if (!king || !castlingMove) {
+        this.DEBUG && console.warn(`King cannot castle (${type})`);
+        return null;
+      }
+      return {
+        notation: move,
+        move: castlingMove,
+        piece: king,
+      };
+    }
+
+    const regex = /^(|R|N|B|Q|K)(|[a-h])(|[1-8])(|x)([a-h][1-8])(?:=(R|N|B|Q))?$/;
     const match = regex.exec(move);
     this.DEBUG && console.log("parseMove(move:", move, ") match:", match);
     if (!match) {
@@ -21,11 +37,11 @@ export class Notation {
       return null;
     }
     
-    const [_, pId, depCol, depRow, captures, to] = match;
+    const [_, pId, depCol, depRow, captures, to, promotion] = match;
     const toPosition = Position.create(to.toUpperCase() as `${Col}${Row}`);
     const candidates = availablePieces
       .filter(p => p.notation === pId)
-      .filter(p => p.validMoves().map(m => m.toString()).includes(toPosition.toString()));
+      .filter(p => p.validMoves().some(move => move.to.equals(toPosition)));
     if (candidates.length === 0) {
       this.DEBUG && console.warn("No piece of type", pId || "pawn", "contain a move to position", toPosition.toString());
       return null;
@@ -38,25 +54,43 @@ export class Notation {
       this.DEBUG && console.warn("No piece among candidates", candidates.map(c => c.toString()), "at", departureCol, departureRow, "found");
       return null;
     }
-    return { piece, to: toPosition, notation: move };
+    if (promotion) {
+      const promotionMove = piece.validMoves().filter(isPromotion).find(m => pieceToNotation(m.piece) === promotion);
+      if (!promotionMove) {
+        this.DEBUG && console.warn("Piece has no promotion move to", promotion);
+        return null;
+      }
+      return { piece, move: promotionMove, notation: move };
+    }
+    return { piece, move: { to: toPosition }, notation: move };
   }
 
-  static toAlgebraicNotation(piece: ChessPiece, to: Position, team: ChessPiece[]): string {
+  static toAlgebraicNotation(piece: ChessPiece, move: PieceMove, team: ChessPiece[]): string {
     const piecePosition = piece.position();
     if (!piecePosition) {
       throw new Error("Piece must be on the board!");
     }
+
+    if (isPromotion(move)) {
+      const promotion = pieceToNotation(move.piece);
+      return `${move.to.toString()}=${promotion}`;
+    } else if (isCastling(move)) {
+      return move.type === "short" ? "0-0" : "0-0-0";
+    }
     
-    const otherPieces = team.filter(p => p !== piece).filter(p => p.isOnBoard).filter(p => p.piece === piece.piece);
-    const disambiguation = otherPieces.filter(p => p.validMoves().some(pos => pos.equals(to)));
+    const otherPieces = team
+      .filter(p => p !== piece)
+      .filter(p => p.isOnBoard)
+      .filter(p => p.piece === piece.piece);
+    const disambiguation = otherPieces.filter(p => p.validMoves().some(pos => pos.to.equals(move.to)));
     if (disambiguation.length === 0) {
-      return `${piece.notation}${to.toString().toLowerCase()}`;
+      return `${piece.notation}${move.to.toString().toLowerCase()}`;
     }
     const disambiguationCol = disambiguation.filter(p => p.position()?.col === piecePosition.col);
     if (disambiguationCol.length === 0) {
-      return `${piece.notation}${piecePosition.col.toLocaleLowerCase()}${to.toString().toLowerCase()}`;
+      return `${piece.notation}${piecePosition.col.toLocaleLowerCase()}${move.to.toString().toLowerCase()}`;
     } else {
-      return `${piece.notation}${piecePosition.col.toLocaleLowerCase()}${piecePosition.row}${to.toString().toLowerCase()}`;
+      return `${piece.notation}${piecePosition.col.toLocaleLowerCase()}${piecePosition.row}${move.to.toString().toLowerCase()}`;
     }
   }
 

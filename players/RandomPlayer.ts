@@ -1,7 +1,6 @@
 
-import { ChessPiece } from "../pieces/ChessPiece.ts";
-import { Position } from "../Position.ts";
-import { Action, Move, Player } from "./Player.ts";
+import { ChessPiece, PieceMove } from "../pieces/ChessPiece.ts";
+import { Action, Player } from "./Player.ts";
 
 export class RandomPlayer extends Player {
   constructor(name: string) {
@@ -29,7 +28,7 @@ export class RandomPlayer extends Player {
     return randomPiece;
   }
 
-  protected getRandomMove(piece: ChessPiece): Position {
+  protected getRandomMove(piece: ChessPiece): PieceMove {
     const moves = piece.validMoves();
     if (moves.length === 0) {
       throw new Error("Cannot get random move: Piece cannot move!");

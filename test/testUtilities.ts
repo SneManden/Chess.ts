@@ -6,17 +6,23 @@ import { Position } from "../Position.ts";
 import { Rook } from "../pieces/Rook.ts";
 import { King } from "../pieces/King.ts";
 import { Move } from "../players/Player.ts";
-import { Piece } from "../pieces/ChessPiece.ts";
+import { Piece, PieceMove } from "../pieces/ChessPiece.ts";
 
 // When TS 4.2 is available, use: expected: `${Col}${Row}`[]
-export function assertMovesEquals(moves: Position[], expected: string[], msg?: string): void {
-  const movesSorted = moves.slice().map(m => m.toString()).sort((a,b) => a.localeCompare(b));
+export function assertMovesEquals(moves: PieceMove[], expected: string[], msg?: string): void {
+  const movesSorted = moves.slice().map(m => m.to.toString()).sort((a,b) => a.localeCompare(b));
   const expectedSorted = expected.slice().sort((a,b) => a.localeCompare(b));
   return assertEquals(movesSorted, expectedSorted, msg);
 }
 
-export function assertMovesDoesNotContain(moves: Position[], notExpected: string[], msg?: string): void {
-  const movesMapped = moves.slice().map(m => m.toString());
+export function assertMovesEquals2(moves: Move[], expected: string[], msg?: string): void {
+  const movesSorted = moves.slice().map(m => m.notation).sort((a,b) => a.localeCompare(b));
+  const expectedSorted = expected.slice().sort((a,b) => a.localeCompare(b));
+  return assertEquals(movesSorted, expectedSorted, msg);
+}
+
+export function assertMovesDoesNotContain(moves: PieceMove[], notExpected: string[], msg?: string): void {
+  const movesMapped = moves.slice().map(m => m.to.toString());
   return assertEquals(movesMapped, movesMapped.filter(e => !notExpected.includes(e)), msg);
 }
 
@@ -28,7 +34,7 @@ export function assertMoveIs(move: Move | null, piece: Piece, from: Position, to
   assertEquals({
     piece: move?.piece.piece,
     from: move?.piece.position()?.toString(),
-    to: move?.to.toString(),
+    to: move?.move.to.toString(),
   }, { piece, from: from.toString(), to: to.toString() }, msg);
 }
 

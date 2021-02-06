@@ -1,7 +1,7 @@
 import { Board } from "../Board.ts";
-import { ChessPiece, Piece } from "../pieces/ChessPiece.ts";
+import { ChessPiece, Piece, PieceMove, PromotionMove } from "../pieces/ChessPiece.ts";
 import { Color, PawnRank } from "../Game.ts";
-import { Col, Position } from "../Position.ts";
+import { Col, Position, Row } from "../Position.ts";
 import { notNullish } from "../utility.ts";
 
 export class Pawn<C extends Color> extends ChessPiece {
@@ -32,5 +32,47 @@ export class Pawn<C extends Color> extends ChessPiece {
       ...basicMoves,
       ...attackMoves,
     ];
+  }
+
+  protected specialMoves(): PieceMove[] {
+    return [
+      ...this.promotionMoves(),
+      ...this.enPassantMoves(),
+    ];
+  }
+
+  private promotionMoves(): PromotionMove[] {
+    const pos = this.position();
+    if (!pos) {
+      return [];
+    }
+
+    const forward = pos.forward(this.color);
+    if (forward?.row !== this.opponentEnemyRank) {
+      return [];
+    }
+
+    return [Piece.Queen, Piece.Knight, Piece.Bishop, Piece.Rook].map(piece => (
+      { to: forward, special: "Promotion", piece }
+    ));
+  }
+
+  private get opponentEnemyRank(): Extract<Row, 1 | 8> {
+    return this.color === Color.White ? 8 : 1;
+  }
+
+  private enPassantMoves(): PieceMove[] {
+    const pos = this.position();
+    if (!pos) {
+      return [];
+    }
+
+    // TODO
+    return [];
+    
+    // return [
+    //   pos.forward(this.color)?.left(),
+    //   pos.forward(this.color)?.right(),
+    // ].filter(notNullish).filter(pos => this.isOpponent(this.board.lookAt(pos)));
   }
 }

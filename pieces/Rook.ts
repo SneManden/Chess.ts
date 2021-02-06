@@ -1,5 +1,5 @@
 import { Board } from "../Board.ts";
-import { ChessPiece, Piece } from "../pieces/ChessPiece.ts";
+import { ChessPiece, Piece, PieceMove } from "../pieces/ChessPiece.ts";
 import { Color, HomeRank } from "../Game.ts";
 import { Position } from "../Position.ts";
 import { notNullish } from "../utility.ts";
@@ -22,5 +22,9 @@ export class Rook<C extends Color> extends ChessPiece {
       ...this.range((pos: Position) => pos.left()),
       ...this.range((pos: Position) => pos.right()),
     ].filter(notNullish);
+  }
+
+  protected specialMoves(): PieceMove[] {
+    return [];
   }
 }

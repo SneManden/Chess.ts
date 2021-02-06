@@ -24,7 +24,7 @@ Deno.test("check validity should not alter board", () => {
   assert(pawn !== null, "there must be a pawn at D2");
 
   // Act
-  const isValid = board.isValidMove(pawn, movePos);
+  const isValid = board.isValidMove(pawn, { to: movePos });
   
   // Assert
   assertEquals(board.getPosition(pawn)?.toString(), pawnPos.toString(), "pawn must still be at D2");

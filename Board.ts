@@ -1,4 +1,4 @@
-import { ChessPiece, Piece, PieceNotation } from "./pieces/ChessPiece.ts";
+import { ChessPiece, isCastling, isPromotion, Piece, PieceMove, PieceNotation } from "./pieces/ChessPiece.ts";
 import { Color, HomeRank, PawnRank, Square } from "./Game.ts";
 import { Row, Col, Position } from "./Position.ts";
 import { Pawn } from "./pieces/Pawn.ts";
@@ -46,6 +46,25 @@ export class Board {
     }
   }
 
+  applyMove(piece: ChessPiece, move: PieceMove): Square {
+    const replacement = piece.move(move.to);
+
+    if (isPromotion(move)) {
+      const promotion = this.createPiece(move.piece, piece.color); // Create promoted piece
+      this.updatePosition(piece, null); // remove the pawn
+      this.add(promotion, move.to); // add instead the promoted piece to the board
+    } else if (isCastling(move)) {
+      const rookPosition = move.rook.position();
+      if (!rookPosition) {
+        throw new Error("Cannot castle with rook outside the board!");
+      }
+      const newRookPosition = new Position(move.type === "short" ? "F" : "D", rookPosition.row);
+      move.rook.move(newRookPosition);
+    }
+    
+    return replacement;
+  }
+
   replace(piece: ChessPiece, pos: Position): Square {
     const current = this.lookAt(pos);
     if (current) {
@@ -63,13 +82,21 @@ export class Board {
     return this.pieces[piece.id] ?? null;
   }
 
-  underAttack(pos: Position, self: Color): boolean {
-    const opponents = self === Color.White ? this.black : this.white;
-    return opponents.some(opp => opp.validMoves(true).find(movePosition => movePosition.equals(pos)));
+  getKing(color: Color): ChessPiece | null {
+    return (color === Color.White ? this.white : this.black).find(p => p.piece === Piece.King) ?? null;
   }
 
-  isValidMove(piece: ChessPiece, to: Position): boolean {
-    if (this.lookAt(to)?.color === piece.color) {
+  getRooks(color: Color): ChessPiece[] {
+    return (color === Color.White ? this.white : this.black).filter(p => p.piece === Piece.Rook);
+  }
+
+  underAttack(pos: Position, self: Color): boolean {
+    const opponents = self === Color.White ? this.black : this.white;
+    return opponents.some(opp => opp.validMoves(true).find(move => move.to.equals(pos)));
+  }
+
+  isValidMove(piece: ChessPiece, move: PieceMove): boolean {
+    if (this.lookAt(move.to)?.color === piece.color) {
       return false; // Cannot move to position with a teammate 
     }
 
@@ -80,18 +107,18 @@ export class Board {
     if (!originalPosition) {
       throw new Error("Cannot check for invalid move for piece not on board");
     }
-    const replaced = this.replace(piece, to);
+    const replaced = this.replace(piece, move.to);
     const kingIsFine = this.kingStatus(piece.color, true) === "none";
 
-    this.undoMove(piece, to, replaced, originalPosition);
+    this.undoMove(piece, move, replaced, originalPosition);
 
     return kingIsFine;
   }
 
-  private undoMove(piece: ChessPiece, move: Position, moveSquare: Square, originalPosition: Position): void {
+  private undoMove(piece: ChessPiece, move: PieceMove, moveSquare: Square, originalPosition: Position): void {
     this.replace(piece, originalPosition);
     if (moveSquare) {
-      this.replace(moveSquare, move);
+      this.replace(moveSquare, move.to);
     }
   }
 
@@ -227,19 +254,25 @@ export class Board {
     };
   }
 
-  private createPiece(notation: PieceNotation, color: Color): ChessPiece {
+  private createPiece(notation: PieceNotation | Piece, color: Color): ChessPiece {
     switch (notation) {
       case "":
+      case Piece.Pawn:
         return new Pawn(this, color, null);
       case "R":
+      case Piece.Rook:
         return new Rook(this, color, null);
       case "N":
+      case Piece.Knight:
         return new Knight(this, color, null);
       case "B":
+      case Piece.Bishop:
         return new Bishop(this, color, null);
       case "Q":
+      case Piece.Queen:
         return new Queen(this, color, null);
       case "K":
+      case Piece.King:
         return new King(this, color, null);
     }
   }

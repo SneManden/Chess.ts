@@ -1,6 +1,5 @@
-import { ChessPiece } from "../pieces/ChessPiece.ts";
+import { ChessPiece, isPromotion, PieceMove } from "../pieces/ChessPiece.ts";
 import { Piece } from "../pieces/ChessPiece.ts";
-import { Position } from "../Position.ts";
 import { Action, Move } from "./Player.ts";
 import { RandomPlayer } from "./RandomPlayer.ts";
 
@@ -26,24 +25,29 @@ export class GreedyPlayer extends RandomPlayer {
     }
 
     const bestAttackPiece = attackingPieces.sort((a,b) =>
-      this.importance(this.board?.lookAt(a.attackMoves[0]) ?? null)
+      this.importance(a.attackMoves[0])
       -
-      this.importance(this.board?.lookAt(b.attackMoves[0]) ?? null)
+      this.importance(b.attackMoves[0])
     )[0];
     return this.createMove(bestAttackPiece.piece, bestAttackPiece.attackMoves[0]);
   }
 
-  private attackingMoves(piece: ChessPiece): Position[] {
+  private attackingMoves(piece: ChessPiece): PieceMove[] {
     return piece.validMoves()
-      .filter(pos => this.isOpponent(this.board?.lookAt(pos) ?? null))
+      .filter(move => this.isOpponent(this.board?.lookAt(move.to) ?? null))
       .sort((a, b) =>
-        this.importance(this.board?.lookAt(b) ?? null)
+        this.importance(b)
         -
-        this.importance(this.board?.lookAt(a) ?? null)
+        this.importance(a)
       );
   }
 
-  private importance(piece: ChessPiece | null): 0 | 1 | 2 | 3 | 4 {
+  private importance(move: PieceMove): 0 | 1 | 2 | 3 | 4 | 5 {
+    if (isPromotion(move)) {
+      return move.piece === Piece.Queen ? 5 : 4;
+    }
+
+    const piece = this.board?.lookAt(move.to) ?? null
     if (!piece) {
       return 0;
     }

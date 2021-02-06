@@ -1,14 +1,13 @@
 import { Board } from "../Board.ts";
-import { ChessPiece } from "../pieces/ChessPiece.ts";
+import { ChessPiece, PieceMove } from "../pieces/ChessPiece.ts";
 import { Color, Square } from "../Game.ts";
-import { Position } from "../Position.ts";
 import { notNullish, uuidv4 } from "../utility.ts";
 import { Notation } from "../Notation.ts";
 
 export interface Move {
   notation: string;
   piece: ChessPiece;
-  to: Position;
+  move: PieceMove;
 }
 
 export type Action = Move | "resign";
@@ -40,11 +39,11 @@ export abstract class Player {
 
   abstract makeMove(): Promise<Action>;
 
-  protected createMove(piece: ChessPiece, to: Position): Move {
+  protected createMove(piece: ChessPiece, move: PieceMove): Move {
     return {
       piece,
-      to,
-      notation: Notation.toAlgebraicNotation(piece, to, this.availablePieces),
+      move,
+      notation: Notation.toAlgebraicNotation(piece, move, this.availablePieces),
     }
   }
 
