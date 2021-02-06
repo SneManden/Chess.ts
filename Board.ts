@@ -1,4 +1,4 @@
-import { ChessPiece, isCastling, isPromotion, Piece, PieceMove, PieceNotation } from "./pieces/ChessPiece.ts";
+import { ChessPiece, isCastling, isEnPassant, isPromotion, Piece, PieceMove, PieceNotation } from "./pieces/ChessPiece.ts";
 import { Color, HomeRank, PawnRank, Square } from "./Game.ts";
 import { Row, Col, Position } from "./Position.ts";
 import { Pawn } from "./pieces/Pawn.ts";
@@ -68,6 +68,9 @@ export class Board {
       }
       const newRookPosition = new Position(move.type === "short" ? "F" : "D", rookPosition.row);
       move.rook.move(newRookPosition);
+    } else if (isEnPassant(move)) {
+      this.updatePosition(move.pawn, null);
+      return move.pawn;
     }
     
     return replacement;

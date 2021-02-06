@@ -1,3 +1,4 @@
+import { assert, assertEquals } from "https://deno.land/std@0.85.0/testing/asserts.ts";
 import { Board } from "../../Board.ts";
 import { Color } from "../../Game.ts";
 import { Notation } from "../../Notation.ts";
@@ -48,4 +49,18 @@ Deno.test("pawn at second to last row should have pawn promotion moves", () => {
     notation: Notation.toAlgebraicNotation(pawn, move, [pawn]),
   }));
   assertMovesEquals2(moves, ["d8=Q", "d8=N", "d8=B", "d8=R"]);
+});
+
+Deno.test("en passant", () => {
+  const board = new Board();
+  const { white, black } = board.setupBoard({ white: ["a2", "b2"], black: ["a5", "b4"] });
+  const [whitePawn] = white;
+  const [_, blackPawn] = black;
+
+  board.applyMove(whitePawn, { to: Position.create("A4"), from: whitePawn.position() });
+  assertMovesEquals(blackPawn.validMoves(), ["B3", "A3"]);
+  const enPassantMove = blackPawn.validMoves().find(m => m.to.equals(Position.create("A3")));
+  assert(enPassantMove);
+  const replaced = board.applyMove(blackPawn, enPassantMove);
+  assertEquals(replaced, whitePawn);
 });

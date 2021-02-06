@@ -1,5 +1,5 @@
 import { Board } from "../Board.ts";
-import { ChessPiece, Piece, PieceMove, PromotionMove } from "../pieces/ChessPiece.ts";
+import { ChessPiece, EnPassantMove, Piece, PieceMove, PromotionMove } from "../pieces/ChessPiece.ts";
 import { Color, PawnRank } from "../Game.ts";
 import { Col, Position, Row } from "../Position.ts";
 import { notNullish } from "../utility.ts";
@@ -77,7 +77,7 @@ export class Pawn<C extends Color> extends ChessPiece {
     return this.color === Color.White ? 8 : 1;
   }
 
-  private enPassantMoves(): PieceMove[] {
+  private enPassantMoves(): EnPassantMove[] {
     const pos = this.positionSafe();
     if (!pos) {
       return [];
@@ -95,10 +95,10 @@ export class Pawn<C extends Color> extends ChessPiece {
       .filter(p => p.piece === Piece.Pawn && this.isOpponent(p))
       .filter(p => this.lastMoveWasPawnInitialDoubleForward(lastMove, p));
     
-    return victimPawns.map(this.createEnPassantMove);
+    return victimPawns.map(p => this.createEnPassantMove(p));
   }
 
-  private createEnPassantMove(pawn: ChessPiece): PieceMove {
+  private createEnPassantMove(pawn: ChessPiece): EnPassantMove {
     const moveTo = pawn.position().forward(this.color);
     if (!moveTo) {
       throw new Error("En passant move to position is null!");
@@ -107,6 +107,7 @@ export class Pawn<C extends Color> extends ChessPiece {
       from: this.position(),
       to: moveTo,
       special: "En passant",
+      pawn,
     };
   }
 

@@ -33,12 +33,21 @@ export interface CastlingMove extends PieceMove {
   type: "short" | "long";
 }
 
+export interface EnPassantMove extends PieceMove {
+  special: "En passant";
+  pawn: ChessPiece;
+}
+
 export function isPromotion(move: PieceMove): move is PromotionMove {
   return move.special === "Promotion";
 }
 
 export function isCastling(move: PieceMove): move is CastlingMove {
   return move.special === "Castling";
+}
+
+export function isEnPassant(move: PieceMove): move is EnPassantMove {
+  return move.special === "En passant";
 }
 
 export function pieceToNotation(piece: Piece): PieceNotation {
