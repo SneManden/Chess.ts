@@ -51,6 +51,14 @@ Deno.test("pawn at second to last row should have pawn promotion moves", () => {
   assertMovesEquals2(moves, ["d8=Q", "d8=N", "d8=B", "d8=R"]);
 });
 
+Deno.test("pawn at second to last row with opponent in front should not have pawn promotion moves", () => {
+  const board = new Board();
+  const { white } = board.setupBoard({ white: ["d7"], black: ["d8"] });
+  const pawn = white.first();
+  assert(pawn);
+  assertMovesEquals(pawn.validMoves(), []);
+});
+
 Deno.test("en passant", () => {
   const board = new Board();
   const { white, black } = board.setupBoard({ white: ["a2", "b2"], black: ["a5", "b4"] });

@@ -51,11 +51,9 @@ export class Pawn<C extends Color> extends ChessPiece {
     }
 
     const movesToEnemyRank = [
-      pos.forward(this.color),
-      ...this.attackMoves()
-    ]
-    .filter(notNullish)
-    .filter(p => p.row === this.opponentEnemyRank);
+      ...[pos.forward(this.color)].filter(notNullish).filter(p => !this.board.lookAt(p)),
+      ...this.attackMoves().filter(notNullish).filter(p => this.isOpponent(this.board.lookAt(p))),
+    ].filter(p => p.row === this.opponentEnemyRank);
     
     if (movesToEnemyRank.length === 0) {
       return [];

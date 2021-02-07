@@ -1,10 +1,10 @@
 import { assert, assertEquals, assertNotEquals } from "https://deno.land/std@0.85.0/testing/asserts.ts";
 import { Board } from "../Board.ts";
 import { Color } from "../Game.ts";
-import { Piece } from "../pieces/ChessPiece.ts";
+import { isPromotion, Piece } from "../pieces/ChessPiece.ts";
 import { Notation } from "../Notation.ts";
 import { ChessPiece } from "../pieces/ChessPiece.ts";
-import { assertMoveIs as assertMoveEquals } from "./testUtilities.ts";
+import { assertMoveIs as assertMoveEquals, assertMoveIs } from "./testUtilities.ts";
 import { Position } from "../Position.ts";
 
 interface TestGame {
@@ -60,4 +60,21 @@ Deno.test("valid move (white): pawn to D4 should be 'd4'", () => {
   assert(pawn);
   const move = Notation.toAlgebraicNotation(pawn, { to: Position.create("D4"), from: Position.create("D2") }, game.pieces.white);
   assertEquals(move, "d4");
+});
+
+Deno.test("pawn cannot move to opponent home rank without promotion", () => {
+  const board = new Board();
+  const { white } = board.setupBoard({ white: ["d7"], black: ["Rc8", "d8"] });
+  const move = Notation.parseMove("c8", white);
+  assertEquals(move, null);
+});
+
+Deno.test("pawn promotion", () => {
+  const board = new Board();
+  const { white } = board.setupBoard({ white: ["d7"], black: ["Rc8", "d8"] });
+  const move = Notation.parseMove("c8=Q", white);
+  assert(move);
+  assert(isPromotion(move.move));
+  assertEquals(move.move.piece, Piece.Queen);
+  assertEquals(move.move.to.toString(), "C8");
 });

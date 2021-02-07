@@ -1,4 +1,3 @@
-import { Board } from "./Board.ts";
 import { ChessPiece, isCastling, isEnPassant, isPromotion, Piece, PieceMove, PieceNotation, pieceToNotation } from "./pieces/ChessPiece.ts";
 import { Move } from "./players/Player.ts";
 import { Col, Position, Row } from "./Position.ts";
@@ -29,7 +28,7 @@ export class Notation {
       };
     }
 
-    const regex = /^(|R|N|B|Q|K)(|[a-h])(|[1-8])(|x)([a-h][1-8])(?:(?:=(R|N|B|Q))|e\.p\.)?$/;
+    const regex = /^(|R|N|B|Q|K)(|[a-h])(|[1-8])(|x)([a-h][1-8])(?:(?:=(R|N|B|Q))|(e\.p\.))?$/;
     const match = regex.exec(move);
     this.DEBUG && console.log("parseMove(move:", move, ") match:", match);
     if (!match) {
@@ -37,7 +36,7 @@ export class Notation {
       return null;
     }
     
-    const [_, pId, depCol, depRow, captures, to, special] = match;
+    const [_, pId, depCol, depRow, captures, to, promotion, enPassant] = match;
     const toPosition = Position.create(to.toUpperCase() as `${Col}${Row}`);
     const candidates = availablePieces
       .filter(p => p.notation === pId)
@@ -54,16 +53,28 @@ export class Notation {
       this.DEBUG && console.warn("No piece among candidates", candidates.map(c => c.toString()), "at", departureCol, departureRow, "found");
       return null;
     }
-    if (special && special !== "e.p.") {
-      const promotionMove = piece.validMoves().filter(isPromotion).find(m => pieceToNotation(m.piece) === special);
+
+    if (promotion) {
+      const promotionMove = piece.validMoves().filter(isPromotion).find(m => pieceToNotation(m.piece) === promotion);
       if (!promotionMove) {
-        this.DEBUG && console.warn("Piece has no promotion move to", special);
+        this.DEBUG && console.warn("Piece has no promotion move to", promotion);
         return null;
       }
       return { piece, move: promotionMove, notation: move };
     }
 
-    return { piece, move: { to: toPosition, from: piece.position() }, notation: move };
+    const validMove = piece.validMoves()
+      .filter(p => !isPromotion(p))
+      .filter(p => !isCastling(p))
+      .find(p => p.to.equals(toPosition));
+    if (!validMove) {
+      return null;
+    }
+    if (validMove.special === "En passant" && !enPassant) {
+      move += "e.p."; // it's optional
+    }
+    
+    return { piece, move: validMove, notation: move };
   }
 
   static toAlgebraicNotation(piece: ChessPiece, move: PieceMove, team: ChessPiece[]): string {

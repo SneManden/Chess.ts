@@ -50,6 +50,9 @@ export class Board {
   }
 
   applyMove(piece: ChessPiece, move: PieceMove): Square {
+    if (!this.isValidMove(piece, move)) {
+      throw new Error(`Invalid move ${move.to.toString()} (${move.special ?? ''}) for piece ${piece.toString()}`);
+    }
     const replacement = piece.move(move.to);
     this.moves.push({
       piece,

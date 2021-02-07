@@ -139,7 +139,11 @@ export class Game {
       const activePlayer = i % 2 === 0 ? this.playerWhite : this.playerBlack;
       const otherPlayer = i % 2 === 0 ? this.playerBlack : this.playerWhite;
       const move = Notation.parseMove(moveString, activePlayer.availablePieces);
-      move?.piece.move(move.move.to);
+      if (!move) {
+        console.log("Failed to parse move", moveString, "for player", activePlayer.name);
+        break;
+      }
+      this.board.applyMove(move.piece, move.move);
       this.nextTurn = otherPlayer;
     }
   }
