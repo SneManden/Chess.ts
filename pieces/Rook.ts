@@ -11,6 +11,17 @@ export class Rook<C extends Color> extends ChessPiece {
     super(board, Piece.Rook, color, pos);
   }
 
+  castle(to: Position<"D" | "F", HomeRank<C>>): void {
+    this._pristine = false;
+    if (!this.isOnBoard) {
+      throw new Error("Rook cannot castle: It's not on the board!");
+    }
+    if (this.board.lookAt(to)) {
+      throw new Error(`Cannot castle to non-empty position ${to.toString()}!`);
+    }
+    this.board.replace(this, to);
+  }
+
   protected moves(): Position[] {
     const pos = this.positionSafe();
     if (!pos) {
@@ -24,7 +35,7 @@ export class Rook<C extends Color> extends ChessPiece {
     ].filter(notNullish);
   }
 
-  protected specialMoves(): PieceMove[] {
+  protected specialMoves(skipValidityCheck: boolean): PieceMove[] {
     return [];
   }
 }

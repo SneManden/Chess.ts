@@ -13,8 +13,10 @@ export class Notation {
       return null;
     }
 
-    if (move === "0-0" || move === "0-0-0") {
-      const type = move === "0-0" ? "short" : "long";
+    const castlingRegexMatch = /^(0-0-0|O-O-O)|(0-0|O-O)$/.exec(move);
+    if (castlingRegexMatch) {
+      const [_, isLong, isShort] = castlingRegexMatch;
+      const type = isShort ? "short" : "long";
       const king = availablePieces.find(p => p.piece === Piece.King);
       const castlingMove = king?.validMoves().filter(isCastling).find(m => m.type === type);
       if (!king || !castlingMove) {
@@ -28,7 +30,7 @@ export class Notation {
       };
     }
 
-    const regex = /^(|R|N|B|Q|K)(|[a-h])(|[1-8])(|x)([a-h][1-8])(?:(?:=(R|N|B|Q))|(e\.p\.))?$/;
+    const regex = /^(|R|N|B|Q|K)(|[a-h])(|[1-8])(|x)([a-h][1-8])(?:(?:=(R|N|B|Q))|(e\.p\.))?(\+?)$/;
     const match = regex.exec(move);
     this.DEBUG && console.log("parseMove(move:", move, ") match:", match);
     if (!match) {
@@ -36,7 +38,7 @@ export class Notation {
       return null;
     }
     
-    const [_, pId, depCol, depRow, captures, to, promotion, enPassant] = match;
+    const [_, pId, depCol, depRow, captures, to, promotion, enPassant, check] = match;
     const toPosition = Position.create(to.toUpperCase() as `${Col}${Row}`);
     const candidates = availablePieces
       .filter(p => p.notation === pId)

@@ -31,7 +31,7 @@ export class Knight<C extends Color> extends ChessPiece {
     ].filter(notNullish);
   }
 
-  protected specialMoves(): PieceMove[] {
+  protected specialMoves(skipValidityCheck: boolean): PieceMove[] {
     return [];
   }
 }

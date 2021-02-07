@@ -62,7 +62,7 @@ export function pieceToNotation(piece: Piece): PieceNotation {
 }
 
 export abstract class ChessPiece {
-  private _pristine = true;
+  protected _pristine = true;
   
   readonly id = uuidv4();
   readonly name!: string;
@@ -83,7 +83,7 @@ export abstract class ChessPiece {
   }
 
   protected abstract moves(): Position[];
-  protected abstract specialMoves(): PieceMove[];
+  protected abstract specialMoves(skipValidityCheck: boolean): PieceMove[];
 
   validMoves(skipValidityCheck = false): PieceMove[] {
     if (!this.isOnBoard) {
@@ -93,7 +93,7 @@ export abstract class ChessPiece {
       .map<PieceMove>(to => ({ to, from: this.position() }))
       .filter(move => !this.isTeammate(this.board.lookAt(move.to)));
 
-    const specialMoves = this.specialMoves();
+    const specialMoves = this.specialMoves(skipValidityCheck);
       
     return [
       ...basicMoves,

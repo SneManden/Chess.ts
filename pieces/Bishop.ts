@@ -24,7 +24,7 @@ export class Bishop<C extends Color> extends ChessPiece {
     ].filter(notNullish);
   }
 
-  protected specialMoves(): PieceMove[] {
+  protected specialMoves(skipValidityCheck: boolean): PieceMove[] {
     return [];
   }
 }

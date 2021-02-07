@@ -37,7 +37,7 @@ export class Pawn<C extends Color> extends ChessPiece {
     ].filter(notNullish).filter(pos => this.isOpponent(this.board.lookAt(pos)));
   }
 
-  protected specialMoves(): PieceMove[] {
+  protected specialMoves(skipValidityCheck: boolean): PieceMove[] {
     return [
       ...this.promotionMoves(),
       ...this.enPassantMoves(),

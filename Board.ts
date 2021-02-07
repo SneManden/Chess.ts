@@ -1,4 +1,4 @@
-import { ChessPiece, isCastling, isEnPassant, isPromotion, Piece, PieceMove, PieceNotation } from "./pieces/ChessPiece.ts";
+import { CastlingMove, ChessPiece, isCastling, isEnPassant, isPromotion, Piece, PieceMove, PieceNotation } from "./pieces/ChessPiece.ts";
 import { Color, HomeRank, PawnRank, Square } from "./Game.ts";
 import { Row, Col, Position } from "./Position.ts";
 import { Pawn } from "./pieces/Pawn.ts";
@@ -65,18 +65,34 @@ export class Board {
       this.updatePosition(piece, null); // remove the pawn
       this.add(promotion, move.to); // add instead the promoted piece to the board
     } else if (isCastling(move)) {
-      const rookPosition = move.rook.positionSafe();
-      if (!rookPosition) {
-        throw new Error("Cannot castle with rook outside the board!");
-      }
-      const newRookPosition = new Position(move.type === "short" ? "F" : "D", rookPosition.row);
-      move.rook.move(newRookPosition);
+      this.applyMoveCastling(move);
     } else if (isEnPassant(move)) {
       this.updatePosition(move.pawn, null);
       return move.pawn;
     }
     
     return replacement;
+  }
+
+  private applyMoveCastling(move: CastlingMove): void {
+    const rookPosition = move.rook.positionSafe();
+    if (!rookPosition) {
+      throw new Error("Cannot castle with rook outside the board!");
+    }
+    const newRookPosition = new Position(move.type === "short" ? "F" : "D", rookPosition.row);
+    
+    const isValidPosition = <C extends Color>(position: Position<Col,Row>, homeRank: HomeRank<C>)
+      : position is Position<"F"|"D", HomeRank<C>> => position.row === homeRank && ["F","D"].includes(position.col);
+    
+      if (move.rook.color === Color.White && isValidPosition<Color.White>(newRookPosition, 1)) {
+      const rook = move.rook as Rook<Color.White>;
+      rook.castle(newRookPosition);
+    } else if (move.rook.color === Color.Black && isValidPosition<Color.Black>(newRookPosition, 8)) {
+      const rook = move.rook as Rook<Color.Black>;
+      rook.castle(newRookPosition);
+    } else {
+      throw new Error(`Cannot castle with rook to invalid position ${newRookPosition.toString()}`);
+    }
   }
 
   replace(piece: ChessPiece, pos: Position): Square {

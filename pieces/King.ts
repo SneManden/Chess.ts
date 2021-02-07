@@ -28,11 +28,14 @@ export class King<C extends Color> extends ChessPiece {
     ].filter(notNullish);
   }
 
-  protected specialMoves(): PieceMove[] {
-    return [this.castling("short"), this.castling("long")].filter(notNullish);
+  protected specialMoves(skipValidityCheck: boolean): PieceMove[] {
+    return [
+      this.castling("short", skipValidityCheck),
+      this.castling("long", skipValidityCheck)
+    ].filter(notNullish);
   }
 
-  private castling(type: "short" | "long"): CastlingMove | null {
+  private castling(type: "short" | "long", skipValidityCheck: boolean): CastlingMove | null {
     if (!this.pristine) {
       return null;
     }
@@ -42,22 +45,22 @@ export class King<C extends Color> extends ChessPiece {
     }
     const kingMoveSequence = type === "short"
       ? this.range(pos => pos.right(), 2)
-      : this.range(pos => pos.left(), 3);
+      : this.range(pos => pos.left(), 2);
     const kingMove = kingMoveSequence.last();
     if (!kingMove) {
       return null;
     }
-    if (!this.validCastlingMove(kingMoveSequence)) {
+    if (!this.validCastlingMove(kingMoveSequence, skipValidityCheck)) {
       return null;
     }
     return { to: kingMove, from: this.position(), special: "Castling", rook, type };
   }
 
-  private validCastlingMove(sequence: Position[]): boolean {
+  private validCastlingMove(sequence: Position[], skipValidityCheck: boolean): boolean {
     if (sequence.some(pos => this.board.lookAt(pos))) {
       return false;
     }
-    if (sequence.some(pos => this.board.underAttack(pos, this.color))) {
+    if (!skipValidityCheck && sequence.some(pos => this.board.underAttack(pos, this.color))) {
       return false;
     }
     return true;

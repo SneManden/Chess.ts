@@ -14,7 +14,7 @@ export type Square = ChessPiece | Empty;
 
 export interface GameOptions {
   delay: number | null;
-  maxRounds: number;
+  maxRounds: number | "unlimited";
   drawBoard: boolean | "final";
 }
 
@@ -69,7 +69,7 @@ export class Game {
     }
     
     let round = 1;
-    for (; round <= opt.maxRounds; round++) {
+    for (; opt.maxRounds === "unlimited" ? true : round <= opt.maxRounds; round++) {
       const activePlayer = this.nextTurn;
       if (!activePlayer) {
         break;
@@ -130,21 +130,37 @@ export class Game {
     };
   }
 
-  playSequence(moves: string[]): void {
+  async playSequence(moves: string[], options?: Partial<GameOptions>): Promise<void> {
     if (!this.playerWhite || !this.playerBlack) {
       throw new Error("Game needs players!");
     }
+    const opt: GameOptions = { ...this.DEFAULT_GAME_OPTIONS, ...options };
+    console.log("playSequence() with options:", opt);
     for (let i = 0; i < moves.length; i++) {
       const moveString = moves[i];
       const activePlayer = i % 2 === 0 ? this.playerWhite : this.playerBlack;
       const otherPlayer = i % 2 === 0 ? this.playerBlack : this.playerWhite;
+      if (moveString === "resign") {
+        console.log(`${i}.`, "[", Color[activePlayer.color], "]", moveString);
+        break;
+      }
       const move = Notation.parseMove(moveString, activePlayer.availablePieces);
       if (!move) {
         console.log("Failed to parse move", moveString, "for player", activePlayer.name);
         break;
       }
       this.board.applyMove(move.piece, move.move);
+      console.log(`${i}.`, "[", Color[activePlayer.color], "]", move.notation);
+      if (opt.drawBoard === true) {
+        console.log(this.board.drawLargeBoardString());
+      }
       this.nextTurn = otherPlayer;
+      if (opt.delay) {
+        await delay(opt.delay)
+      }
+    }
+    if (opt.drawBoard === "final") {
+      this.board.drawLargeBoardString();
     }
   }
 }
