@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>WebSocket</title>
+  </head>
+  <body>
+    <h1>Chess</h1>
+
+    <h3>Messages:</h3>
+    <p id="output"></p>
+    
+    <script>
+      const loc = window.location;
+      let uri = "ws:";
+      
+      if (loc.protocol === "https:") {
+        uri = "wss:";
+      }
+      uri += "//" + loc.host;
+      uri += loc.pathname + "ws";
+      
+      const ws = new WebSocket(uri);
+      
+      ws.onopen = function (event) {
+        console.log("Connected", event);
+      }
+      
+      ws.onmessage = function (evt) {
+        let out = document.getElementById("output");
+        out.innerHTML += evt.data + "<br>";
+      }
+
+      ws.onclose = function (event) {
+        console.log("Disconnected", event);
+      }
+
+      const commands = ["some", "start", "quit", "are you there?"];
+      let i = 0;
+
+      function sendCommand() {
+        const command = commands[i++];
+        if (command) {
+          console.log("=> send:", command);
+          ws.send(command);
+          return true;
+        }
+        return false;
+      }
+
+      const ref = setInterval(() => {
+        console.log("Sending command...");
+        const cont = sendCommand();
+        if (!cont) {
+          clearInterval(ref);
+        }
+      }, 1000);
+      
+      // setInterval(function () {
+      //   ws.send("Hello, Server!");
+      // }, 1000);
+      </script>
+</body>
+</html>
