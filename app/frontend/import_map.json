@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "react-dom": "https://cdn.skypack.dev/preact-compat@3.19.0",
+    "react": "https://cdn.skypack.dev/preact-compat@3.19.0"
+  }
+}
